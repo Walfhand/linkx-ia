@@ -13,7 +13,8 @@ public sealed class MakeMoveEndpoint() : MinimalEndpoint<IResult>(EndpointType.P
     {
         try
         {
-            _ = Turn.Create(request.Game, request.Color, request.Record, request.DeadlineMs);
+            var turn = Turn.Create(request.Game, request.Color, request.Record, request.DeadlineMs);
+            return Results.Ok(new { move = turn.SelectMove().ToString() });
         }
         catch (ArgumentException error)
         {
@@ -22,9 +23,6 @@ public sealed class MakeMoveEndpoint() : MinimalEndpoint<IResult>(EndpointType.P
                 [error.ParamName ?? "request"] = [error.Message]
             });
         }
-
-        // ponytail: this token is only a protocol placeholder; replace it with a legal-move selector when game rules arrive.
-        return Results.Ok(new { move = "15" });
     }
 
     public sealed record Request(

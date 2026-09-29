@@ -13,4 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/LinkxAi.Api/LinkxAi.Api.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ReferenceFixtures/rules.json" />
+  </ItemGroup>
 </Project>

@@ -17,6 +17,17 @@ public sealed record Turn
     public string Record { get; }
     public int DeadlineMs { get; }
 
+    public Move SelectMove()
+    {
+        var position = GamePosition.Replay(Record);
+        if (position.Result is not null) throw new GameRuleException("game-over");
+        if (position.ActivePlayer != Color)
+            throw new ArgumentException("Color must match the active player in record.", "color");
+
+        // ponytail: first legal move has no strategic strength; replace this choice when search is implemented.
+        return position.GetLegalMoves()[0];
+    }
+
     public static Turn Create(string? game, string? color, string? record, int deadlineMs)
     {
         if (string.IsNullOrWhiteSpace(game))
