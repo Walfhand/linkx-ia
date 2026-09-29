@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LinkxAi.Api/LinkxAi.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LinkxAi.Tests.Integration/LinkxAi.Tests.Integration.csproj" />
+    <Project Path="tests/LinkxAi.Tests.Unit/LinkxAi.Tests.Unit.csproj" />
+  </Folder>
+</Solution>
