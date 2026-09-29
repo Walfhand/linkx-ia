@@ -41,7 +41,7 @@ La recherche actuelle évalue les chemins de connexion, les réserves et les plu
 
 Le professeur utilisé pour le premier entraînement est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
 
-Un [premier modèle expérimental et ses poids](models/pilot-v1) sont disponibles. L'[entraînement local](training/README.md) utilise la Radeon, puis exporte un modèle ONNX vérifié sur CPU. L'API actuelle conserve sa recherche classique jusqu'à la validation du réseau en parties.
+Le [pilote MLP](models/pilot-v1) et les [premiers NNUE incrémentaux](models/nnue-v1) sont disponibles avec leurs poids et résultats. L'[entraînement local](training/README.md) utilise la Radeon. Les NNUE sont exportés en entiers et exécutés nativement en C# sur CPU, avec mises à jour après les coups et restauration après annulation. L'API actuelle conserve sa recherche classique jusqu'à une validation suffisante du réseau en parties indépendantes.
 
 L'outil d'analyse lit une requête JSON par ligne et écrit un résultat JSON par ligne, avec `move`, `score`, `depth`, `nodes`, `exact` et `elapsedMs`. Le score est donné du point de vue du joueur au trait dans la position de départ. `elapsedMs` mesure la recherche après rejeu, pour comparer des budgets de recherche égaux :
 

@@ -1,0 +1,29 @@
+{
+  "best_epoch": 4,
+  "epochs_completed": 24,
+  "training_seconds": 19.98800084902905,
+  "train": {
+    "positions": 68507,
+    "opening_groups": 15,
+    "games": 8590,
+    "mse": 0.13017380237579346,
+    "mae": 0.23741848766803741,
+    "constant_baseline_mse": 0.6218945980072021
+  },
+  "validation": {
+    "positions": 5164,
+    "opening_groups": 1,
+    "games": 586,
+    "mse": 0.34730780124664307,
+    "mae": 0.39040663838386536,
+    "constant_baseline_mse": 0.6279977560043335
+  },
+  "test": {
+    "positions": 4617,
+    "opening_groups": 1,
+    "games": 585,
+    "mse": 0.4513076841831207,
+    "mae": 0.46620434522628784,
+    "constant_baseline_mse": 0.6336742043495178
+  }
+}

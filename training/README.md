@@ -1,6 +1,42 @@
 # Entraînement local
 
-Le premier modèle est disponible dans [models/pilot-v1](../models/pilot-v1). Il s'agit d'un petit réseau de valeur expérimental ; aucune force Elo n'est encore mesurée.
+Le premier MLP est disponible dans [models/pilot-v1](../models/pilot-v1). La campagne [NNUE v1](../models/nnue-v1) compare trois réseaux à calcul incrémental. Ces modèles sont expérimentaux ; aucune force Elo officielle n'est mesurée.
+
+## NNUE v1
+
+La campagne utilise 10 000 parties, réparties en quatre lots de 2 500, aux graines 53201 à 53204. Le professeur conserve son budget de 50 000 nœuds par position et 20 % d'exploration. L'ensemble de données et les partitions sont identiques pour les trois tailles.
+
+```bash
+node training/generate-data.mjs --reference /tmp/linkx-reference --games 2500 --nodes 50000 --seed 53201 --output training/data/nnue-v1-53201.jsonl
+# Répéter pour 53202, 53203 et 53204 (un fichier distinct par processus).
+```
+
+Chaque perspective comporte 294 entrées binaires : 162 cases/couleurs, 42 réserves catégorielles (deux joueurs, sept formes, trois quantités) et 90 hauteurs de colonnes (neuf colonnes, dix hauteurs). La hauteur est celle de la case occupée la plus haute, mesurée depuis le bas. Aucun retournement vertical n'est autorisé.
+
+Les deux perspectives utilisent la même transformation `294 → H`. Leurs résultats sont concaténés avec le joueur au trait en premier, puis traversent `2H → 32 → 1`. Les tailles comparées sont H=256 (91 969 paramètres), H=512 (183 873) et H=1024 (367 681).
+
+L'entraînement simule la quantification avec gradients droits à travers les arrondis : poids de transformation à l'échelle 256, activations limitées à 0..256, poids des couches finales à l'échelle 64, biais finaux à l'échelle 16 384. Les arrondis utilisent la règle du pair le plus proche. Une tangente hyperbolique produit la valeur finale dans -1..1.
+
+Pour chaque largeur, utiliser l'image Radeon décrite ci-dessous avec ces arguments :
+
+```bash
+python3 training/train.py --data training/data/nnue-v1-53201.jsonl training/data/nnue-v1-53202.jsonl training/data/nnue-v1-53203.jsonl training/data/nnue-v1-53204.jsonl --output training/runs/nnue-v1-h256 --device cuda --nnue-width 256 --epochs 200 --seed 42
+```
+
+Les poids `weights.pt` et le fichier natif `model.nnue` sont exportés ensemble. Le format `LXNNU001` contient un en-tête little-endian (signature de huit octets, largeur, 294, 32), puis chaque couche : poids int16 et biais int32. La première couche est stockée par entrée pour appliquer les différences rapidement. Les bornes de poids et de dimensions sont vérifiées au chargement pour exclure les débordements d'entiers.
+
+Le moteur C# conserve deux accumulateurs, pour les couleurs fixes bleu et blanc. Il applique uniquement les entrées qui changent après un coup et restaure les accumulateurs du parent lors d'une annulation. Une passe forcée ne permute pas ces accumulateurs ; seul l'ordre d'entrée des couches finales dépend du joueur au trait. Le parcours de recherche garantit l'annulation même lors d'une interruption ou d'une exception.
+
+```bash
+dotnet build LinkxAi.slnx -c Release
+.venv/bin/python training/check-nnue.py training/runs/nnue-v1-h256
+node training/check-dotnet.mjs training/runs/nnue-v1-h256
+node scripts/validate-teacher.mjs /tmp/linkx-reference /tmp/linkx-exact-endgames.json 100 training/runs/nnue-v1-h256/model.nnue > training/runs/nnue-v1-h256/duels.json
+```
+
+La vérification compare les prédictions GPU, PyTorch CPU et C# sur 32 positions de validation et 45 instantanés indépendants des règles. Les tests unitaires comparent aussi les accumulateurs entiers après coups, passes et annulations, puis la recherche avec et sans calcul incrémental. Les duels contrôlent les 260 fins de partie exactes et les coups légaux contre le moteur Marmelab, le moteur C# classique et le premier coup légal.
+
+Ces matchs sont un diagnostic de premier essai : les 17 ouvertures recoupent les familles du corpus, 34 parties par adversaire ne suffisent pas pour estimer un Elo fiable, et les mesures varient avec le matériel. La sélection d'une taille lors de ce diagnostic ne vaut pas promotion en production. Le futur service Docker `engine` reste à intégrer après validation de la force et du budget complet de réponse.
 
 ## Données
 

@@ -1,5 +1,5 @@
 // Independent validation of the C# candidate. Build tools/LinkxAi.Analysis first.
-// Usage: node scripts/validate-teacher.mjs REFERENCE_CHECKOUT EXACT_ENDGAMES_JSON [budgetMs] [model.onnx]
+// Usage: node scripts/validate-teacher.mjs REFERENCE_CHECKOUT EXACT_ENDGAMES_JSON [budgetMs] [model.onnx|model.nnue]
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { execFileSync, spawn } from 'node:child_process';
@@ -64,6 +64,7 @@ try {
     const openings = ['', ...OPENINGS.map(opening => opening.notation)];
     async function duel(opponent) {
         const games = [];
+        const searches = [];
         let maximumMs = 0;
         for (const opening of openings) {
             for (const color of ['blue', 'white']) {
@@ -79,6 +80,8 @@ try {
                     let move;
                     if (state.activePlayer === color) {
                         const decision = await candidate.analyze({ record, budgetMs });
+                        assert.ok(Number.isFinite(decision.elapsedMs) && Number.isInteger(decision.nodes));
+                        searches.push(decision);
                         maximumMs = Math.max(maximumMs, decision.elapsedMs);
                         move = decision.move;
                     } else if (opponent === 'first-legal') {
@@ -95,9 +98,15 @@ try {
             }
             console.error(`${opponent}: ${games.length}/${openings.length * 2} games`);
         }
+        const durations = searches.map(item => item.elapsedMs).sort((a, b) => a - b);
         return { budgetMs, games, wins: games.filter(game => game.result === 1).length,
             draws: games.filter(game => game.result === 0.5).length, losses: games.filter(game => game.result === 0).length,
-            score: games.reduce((sum, game) => sum + game.result, 0) / games.length, maximumMs };
+            score: games.reduce((sum, game) => sum + game.result, 0) / games.length, maximumMs,
+            searches: searches.length, medianMs: durations[Math.floor(durations.length / 2)],
+            p95Ms: durations[Math.floor((durations.length - 1) * 0.95)],
+            meanDepth: searches.reduce((sum, item) => sum + item.depth, 0) / searches.length,
+            meanNodes: searches.reduce((sum, item) => sum + item.nodes, 0) / searches.length,
+            nodesPerSecond: 1000 * searches.reduce((sum, item) => sum + item.nodes, 0) / durations.reduce((sum, time) => sum + time, 0) };
     }
     const baseline = await duel('first-legal');
     const referenceDuel = await duel('marmelab');

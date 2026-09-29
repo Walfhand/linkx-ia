@@ -1,0 +1,140 @@
+{
+  "format": "linkx-nnue-v1",
+  "status": "experimental",
+  "teacher_commit": "f8f07bdc6c042d11105ca0da24f00d32e1238e01",
+  "architecture": [
+    294,
+    1024,
+    2048,
+    32,
+    1
+  ],
+  "activations": [
+    "clipped_relu",
+    "clipped_relu",
+    "tanh"
+  ],
+  "parameters": 367681,
+  "feature_order": "two perspectives, side-to-move first, shared transform: own cells (81), opponent cells (81), own then opponent categorical reserves (42), categorical column heights (90)",
+  "shape_order": [
+    "mono",
+    "domino",
+    "bar3",
+    "smallL",
+    "s",
+    "t",
+    "largeL"
+  ],
+  "perspective": "side to move",
+  "seed": 42,
+  "target": "sign(score) if proven; otherwise 0.9*tanh(score/4000)+0.1*observed_game_outcome",
+  "split": "opening groups; horizontal-mirror and color-swap equivalent positions deduplicated across all partitions",
+  "raw_samples": 134804,
+  "unique_samples": 78288,
+  "generated_games": 10000,
+  "reserved_positions": 260,
+  "device": "Radeon RX 7900 XTX",
+  "torch": "2.9.1+rocm7.2.1.gitff65f5bc",
+  "hip": "7.2.53211-e1a6bc5663",
+  "training_seconds": 18.689619634009432,
+  "training_image": "rocm/pytorch@sha256:96a2fb24dec9896e2f8238178f0c49d0dcc4c7dcc597be09e4564316bd86d191",
+  "weights_sha256": "89d5438663d2acf4f7c0c057270f6d5207d8eb8e0bf4046d458ef27f68ae95e0",
+  "partitions": {
+    "train": {
+      "opening_keys": [
+        ".................................................................................|22222222222222",
+        ".......................................................................2.......22|22222222221222",
+        "......................................................................2.......222|22222222222212",
+        ".....................................................................2.......222.|22222222222212",
+        "....................................................................2........22..|22222222221222",
+        "....................................................................2.......222..|22222222222212",
+        "...................................................................2........2....|22222222122222",
+        "...................................................................2........22...|22222222221222",
+        "...................................................................2.......222...|22222222222212",
+        ".............................................................2........2........2.|22222222212222",
+        "............................................................2........2........2..|22222222212222",
+        "...........................................................2........2........2...|22222222212222",
+        "...........................................................2........2........22..|22222222222221",
+        "..........................................................2........2........2....|22222222212222",
+        "..........................................................2........2........22...|22222222222221"
+      ],
+      "positions_sha256": "1739578fb75b311f8b19bdaa70dded74350727af42b42ed621eac3b05aa3d42c"
+    },
+    "validation": {
+      "opening_keys": [
+        ".............................................................2........2........22|22222222222221"
+      ],
+      "positions_sha256": "840b758b1bc4598525ef3579b6549470ec47da3a5f2b02d28b4c579f766623ef"
+    },
+    "test": {
+      "opening_keys": [
+        "...........................................................2........2.......22...|22222222222221"
+      ],
+      "positions_sha256": "2831ff87a568e9571571b309b0bd09c5e5cfc18ae0f43ff6e53febf61d20f73d"
+    }
+  },
+  "datasets": [
+    {
+      "file": "nnue-v1-53201.jsonl",
+      "sha256": "de602f608e101c489b73aefec7c983ccdcd6b152884c0131a3a5140b254dbf41"
+    },
+    {
+      "file": "nnue-v1-53202.jsonl",
+      "sha256": "f0850de1c6e60749777bad7287d06ffdd5a4542d9e258af89d07457918f229ee"
+    },
+    {
+      "file": "nnue-v1-53203.jsonl",
+      "sha256": "207b03e4532a83333d04876bc0e3212a914ba5c148ec16109c3f753f17ed23be"
+    },
+    {
+      "file": "nnue-v1-53204.jsonl",
+      "sha256": "bf3e4a1fcd241e77c9094771e3803480fca40bfee2c3dc92105df18bf95d1acb"
+    }
+  ],
+  "trainer_sources": {
+    "train.py": "c383dba37c5a01b5a8cdc82ed58df5d913b73f4355dab7ad4c9854c2d19c0dd5",
+    "model.py": "296fbad9c6450c7e94db345828d0f3d07a5af761f1d1d9afa496dc07294fd100",
+    "data.py": "7c9ee5da613052572ac5d6e3e957d26364bf1d60d5daca027f7d899ace9818cb",
+    "nnue.py": "c62a1504302bf686d12c5ecc207d8353c60215c176a1af7b83c2a8d5b6f96ef0"
+  },
+  "generation": [
+    {
+      "seed": 53201,
+      "maxNodes": 50000,
+      "completedGames": 2500,
+      "samples": 33556,
+      "elapsedSeconds": 944.172253073
+    },
+    {
+      "seed": 53202,
+      "maxNodes": 50000,
+      "completedGames": 2500,
+      "samples": 33640,
+      "elapsedSeconds": 940.83735066
+    },
+    {
+      "seed": 53203,
+      "maxNodes": 50000,
+      "completedGames": 2500,
+      "samples": 33914,
+      "elapsedSeconds": 943.621044336
+    },
+    {
+      "seed": 53204,
+      "maxNodes": 50000,
+      "completedGames": 2500,
+      "samples": 33694,
+      "elapsedSeconds": 933.964732692
+    }
+  ],
+  "promotion": "Not approved for tournament deployment; validation error is not an Elo measurement.",
+  "quantization": {
+    "format": "LXNNU001, little-endian, feature-major int16 transform weights, int32 biases",
+    "transform_scale": 256,
+    "activation_scale": 256,
+    "dense_weight_scale": 64,
+    "dense_bias_scale": 16384,
+    "rounding": "nearest, ties to even",
+    "training": "clipping and straight-through fake quantization at every integer rounding boundary"
+  }
+}

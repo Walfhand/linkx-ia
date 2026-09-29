@@ -1,4 +1,4 @@
-"""Train a pilot value evaluator. The model is experimental until game-strength validation."""
+"""Train a value evaluator. The model is experimental until game-strength validation."""
 import argparse
 import hashlib
 import json
@@ -11,6 +11,7 @@ import torch
 
 from data import encode, load_corpus, split_samples, target
 from model import ValueNet, fit
+from nnue import Nnue, encode_nnue, export_nnue
 
 
 def main():
@@ -20,6 +21,7 @@ def main():
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu", help="cuda also selects AMD ROCm")
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--nnue-width", type=int, choices=[256, 512, 1024])
     args = parser.parse_args()
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("GPU requested but PyTorch cannot access it")
@@ -28,13 +30,14 @@ def main():
     torch.manual_seed(args.seed)
     torch.set_num_threads(4)
     arrays = {}
+    encoder = encode_nnue if args.nnue_width else encode
     for name, items in splits.items():
         mirrors = (False, True) if name == "train" else (False,)
-        features = np.asarray([encode(row, mirror=mirror) for row in items for mirror in mirrors], dtype=np.float32)
+        features = np.asarray([encoder(row, mirror=mirror) for row in items for mirror in mirrors], dtype=np.float32)
         labels = np.asarray([[target(row)] for row in items for _ in mirrors], dtype=np.float32)
         arrays[name] = (torch.from_numpy(features).to(args.device), torch.from_numpy(labels).to(args.device))
     args.output.mkdir(parents=True, exist_ok=False)
-    model = ValueNet().to(args.device)
+    model = (Nnue(args.nnue_width) if args.nnue_width else ValueNet()).to(args.device)
     started = time.perf_counter()
     result = fit(model, *arrays["train"], *arrays["validation"], epochs=args.epochs, seed=args.seed)
     if args.device == "cuda":
@@ -56,11 +59,18 @@ def main():
         np.savez_compressed(args.output / "export-check.npz", features=features.cpu().numpy(), predictions=model(features).cpu().numpy())
     weights = {name: value.detach().cpu() for name, value in model.state_dict().items()}
     torch.save(weights, args.output / "weights.pt")
+    if args.nnue_width:
+        export_nnue(model, args.output / "model.nnue")
+        with torch.no_grad():
+            checks = [{"record": row['record'], "value": float(model(arrays['validation'][0][i:i + 1]).item())}
+                      for i, row in enumerate(splits['validation'][:32])]
+        (args.output / 'dotnet-checks.json').write_text(json.dumps(checks, indent=2) + '\n')
     manifest = {
-        "format": "linkx-value-v1", "status": "experimental", "teacher_commit": metadata[0]["referenceCommit"],
-        "architecture": [176, 128, 32, 1], "activations": ["relu", "relu", "tanh"],
+        "format": "linkx-nnue-v1" if args.nnue_width else "linkx-value-v1", "status": "experimental", "teacher_commit": metadata[0]["referenceCommit"],
+        "architecture": [294, args.nnue_width, args.nnue_width * 2, 32, 1] if args.nnue_width else [176, 128, 32, 1],
+        "activations": ["clipped_relu", "clipped_relu", "tanh"] if args.nnue_width else ["relu", "relu", "tanh"],
         "parameters": sum(parameter.numel() for parameter in model.parameters()),
-        "feature_order": "own cells row-major (81), opponent cells (81), own reserves /2 (7), opponent reserves /2 (7)",
+        "feature_order": "two perspectives, side-to-move first, shared transform: own cells (81), opponent cells (81), own then opponent categorical reserves (42), categorical column heights (90)" if args.nnue_width else "own cells row-major (81), opponent cells (81), own reserves /2 (7), opponent reserves /2 (7)",
         "shape_order": metadata[0]["shapes"], "perspective": "side to move", "seed": args.seed,
         "target": "sign(score) if proven; otherwise 0.9*tanh(score/4000)+0.1*observed_game_outcome",
         "split": "opening groups; horizontal-mirror and color-swap equivalent positions deduplicated across all partitions",
@@ -75,9 +85,18 @@ def main():
                               "positions_sha256": hashlib.sha256("\n".join(sorted(row["position_key"] for row in items)).encode()).hexdigest()}
                        for name, items in splits.items()},
         "datasets": [{"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} for path in sorted(args.data)],
+        "trainer_sources": {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+                            for name in ("train.py", "model.py", "data.py", "nnue.py")},
         "generation": [{key: item[key] for key in ("seed", "maxNodes", "completedGames", "samples", "elapsedSeconds")} for item in metadata],
         "promotion": "Not approved for tournament deployment; validation error is not an Elo measurement.",
     }
+    if args.nnue_width:
+        manifest['quantization'] = {
+            'format': 'LXNNU001, little-endian, feature-major int16 transform weights, int32 biases',
+            'transform_scale': 256, 'activation_scale': 256, 'dense_weight_scale': 64,
+            'dense_bias_scale': 16384, 'rounding': 'nearest, ties to even',
+            'training': 'clipping and straight-through fake quantization at every integer rounding boundary',
+        }
     (args.output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     (args.output / "metrics.json").write_text(json.dumps(metrics, indent=2) + "\n")
     (args.output / "history.json").write_text(json.dumps(result["history"], indent=2) + "\n")

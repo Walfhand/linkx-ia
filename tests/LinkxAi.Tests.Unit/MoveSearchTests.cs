@@ -6,6 +6,34 @@ namespace LinkxAi.Tests.Unit;
 public sealed class MoveSearchTests
 {
     [Fact]
+    public void Find_ShouldRestoreEvaluationState_WhenInterruptedOrEvaluationThrows()
+    {
+        var root = GamePosition.Create();
+        var stack = new Stack<GamePosition>();
+        stack.Push(root);
+        var pushes = 0;
+        void Push(GamePosition child)
+        {
+            Assert.StartsWith(stack.Peek().Record, child.Record);
+            stack.Push(child);
+            pushes++;
+        }
+        int Score(GamePosition position, PlayerColor player)
+        {
+            Assert.Same(position, stack.Peek());
+            return PositionEvaluation.Score(position, player);
+        }
+        MoveSearch.Find(root, maxNodes: 500, evaluate: Score, push: Push, pop: () => stack.Pop());
+        Assert.True(pushes > 100);
+        Assert.Single(stack);
+        Assert.Same(root, stack.Peek());
+        Assert.Throws<InvalidOperationException>(() => MoveSearch.Find(root,
+            evaluate: (_, _) => throw new InvalidOperationException(), push: Push, pop: () => stack.Pop()));
+        Assert.Single(stack);
+        Assert.Throws<ArgumentException>(() => MoveSearch.Find(root, push: Push));
+    }
+
+    [Fact]
     public void Find_ShouldUseInjectedEvaluation_WithoutAllowingItToOverrideTerminalResults()
     {
         var position = GamePosition.Create();

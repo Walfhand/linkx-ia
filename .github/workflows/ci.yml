@@ -13,6 +13,11 @@ jobs:
       - run: dotnet build LinkxAi.slnx -c Release
       - run: dotnet test LinkxAi.slnx -c Release --no-build
       - run: node training/check-dotnet.mjs
+      - name: Check native NNUE against PyTorch reference predictions
+        run: |
+          for width in 256 512 1024; do
+            node training/check-dotnet.mjs "models/nnue-v1/h$width"
+          done
       - run: docker build -t linkx-ai:test .
 
   training-tests:

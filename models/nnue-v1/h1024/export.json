@@ -1,0 +1,8 @@
+{
+  "positions": 77,
+  "gpu_to_cpu_maximum_absolute_error": 5.960464477539063e-08,
+  "native_maximum_absolute_error": 5.8268737834765716e-08,
+  "model_bytes": 737496,
+  "model_sha256": "946a88bbbc3941ba0dd304e58765a5404ec2fe64b0390dc5eca6989bfdb9cb0c",
+  "export_torch": "2.14.0+cpu"
+}

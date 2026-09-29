@@ -1,0 +1,27 @@
+{
+  "model": "models/nnue-v1/h512/model.nnue",
+  "concurrentRequests": 2,
+  "budgetMs": 4500,
+  "maxNodes": 100000,
+  "results": [
+    {
+      "move": "4Lsr13",
+      "score": 780,
+      "depth": 2,
+      "nodes": 100000,
+      "exact": false,
+      "elapsedMs": 1715.5692,
+      "roundTripMs": 1715.9244260401465
+    },
+    {
+      "move": "4Lsr13",
+      "score": 780,
+      "depth": 2,
+      "nodes": 100000,
+      "exact": false,
+      "elapsedMs": 1576.748,
+      "roundTripMs": 1577.1405900013633
+    }
+  ],
+  "scope": "Warm native C# CLI workers on local Ryzen 7 5700X; includes record replay and JSON IPC, excludes HTTP/network/Dokploy."
+}
