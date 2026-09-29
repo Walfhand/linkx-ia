@@ -23,7 +23,8 @@ public sealed class MakeMoveEndpoint() : MinimalEndpoint<IResult>(EndpointType.P
             });
         }
 
-        return Results.StatusCode(StatusCodes.Status501NotImplemented);
+        // ponytail: this token is only a protocol placeholder; replace it with a legal-move selector when game rules arrive.
+        return Results.Ok(new { move = "15" });
     }
 
     public sealed record Request(

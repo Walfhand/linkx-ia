@@ -2,5 +2,7 @@ services:
   api:
     build: .
     restart: unless-stopped
+    environment:
+      Linkx__Secret: ${LINKX_SECRET:-}
     expose:
       - "8080"

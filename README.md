@@ -12,7 +12,8 @@ dotnet run --project src/LinkxAi.Api
 ```
 
 - `GET /api/v1/health` répond `200 ok`.
-- `POST /api/v1/move` reçoit le corps du protocole Linkx. Il valide les champs de base et répond `501` tant que les règles du jeu et le choix du coup ne sont pas implémentés. Le template n'est donc pas encore prêt pour une qualification.
+- `POST /api/v1/move` accepte le JSON du protocole, y compris un `record` vide ou déjà entamé et une version `protocol` inconnue. Il répond `200` avec `{"move":"15"}`. Ce coup fixe vérifie seulement le format de réponse : il peut être illégal selon la position. Ne pas inscrire cette IA au tournoi avant l'implémentation du jeu.
+- Si `LINKX_SECRET` est défini, l'API exige `X-Linkx-Timestamp` et `X-Linkx-Signature` sur `/move`. Le HMAC-SHA256 porte sur `<timestamp>.<corps exact>` ; la fenêtre d'horodatage admise est de cinq minutes. Sans secret configuré, la vérification est désactivée, comme le permet le protocole.
 
 ## Docker et Dokploy
 
@@ -20,6 +21,6 @@ dotnet run --project src/LinkxAi.Api
 docker compose up --build
 ```
 
-Dans Dokploy, créer un service **Docker Compose** depuis ce dépôt, branche `main`, fichier `docker-compose.yml`. Ajouter un domaine HTTPS au service `api` sur le port interne `8080`. Utiliser `/api/v1/health` pour la sonde, puis déclarer `https://<domaine>/api/v1/move` comme adresse de l'IA quand la réponse de jeu sera implémentée. Le port n'est pas publié sur l'hôte ; Dokploy route le domaine vers le service.
+Dans Dokploy, créer un service **Docker Compose** depuis ce dépôt, branche `main`, fichier `docker-compose.yml`. Ajouter un domaine HTTPS au service `api` sur le port interne `8080`. Utiliser `/api/v1/health` pour la sonde. Définir `LINKX_SECRET` avec le secret remis à l'inscription, puis déclarer `https://<domaine>/api/v1/move` comme adresse de l'IA une fois les règles implémentées. Le port n'est pas publié sur l'hôte ; Dokploy route le domaine vers le service.
 
 Les changements de comportement suivent le cycle TDD : test rouge, implémentation minimale, test vert, puis refactorisation. La CI exécute les suites unitaires et d'intégration, puis construit l'image Docker.
