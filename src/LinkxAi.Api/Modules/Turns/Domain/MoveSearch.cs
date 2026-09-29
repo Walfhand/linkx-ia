@@ -6,14 +6,15 @@ public static class MoveSearch
 {
     private const int Win = 1_000_000;
 
-    public static SearchDecision Find(GamePosition position, int maxDepth = 28, int maxNodes = int.MaxValue, Func<bool>? shouldStop = null)
+    public static SearchDecision Find(GamePosition position, int maxDepth = 28, int maxNodes = int.MaxValue, Func<bool>? shouldStop = null,
+        Func<GamePosition, PlayerColor, int>? evaluate = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(maxDepth);
         ArgumentOutOfRangeException.ThrowIfNegative(maxNodes);
         if (position.Result is not null) throw new GameRuleException("game-over");
         var moves = position.GetLegalMoves();
         var remaining = Enum.GetValues<PlayerColor>().Sum(player => Enum.GetValues<Shape>().Sum(shape => position.Remaining(player, shape)));
-        var context = new SearchContext(position.ActivePlayer, maxNodes, shouldStop);
+        var context = new SearchContext(position.ActivePlayer, maxNodes, shouldStop, evaluate ?? PositionEvaluation.Score);
         var decision = new SearchDecision(moves[0], 0, 0, 0, false);
         for (var depth = 1; depth <= Math.Min(maxDepth, remaining); depth++)
         {
@@ -33,7 +34,7 @@ public static class MoveSearch
     private enum Bound { Exact, Lower, Upper }
     private sealed record Entry(int Depth, int Score, Bound Bound, Move? Best);
 
-    private sealed class SearchContext(PlayerColor rootPlayer, int maxNodes, Func<bool>? shouldStop)
+    private sealed class SearchContext(PlayerColor rootPlayer, int maxNodes, Func<bool>? shouldStop, Func<GamePosition, PlayerColor, int> evaluate)
     {
         private readonly Dictionary<string, Entry> table = new(StringComparer.Ordinal);
         public int Nodes { get; private set; }
@@ -45,7 +46,7 @@ public static class MoveSearch
             best = null;
             if (position.Result is { } result)
                 return result.Winner is null ? 0 : result.Winner == rootPlayer ? Win : -Win;
-            if (depth == 0) return PositionEvaluation.Score(position, rootPlayer);
+            if (depth == 0) return Math.Clamp(evaluate(position, rootPlayer), -Win + 1, Win - 1);
 
             var key = Key(position);
             var originalAlpha = alpha;

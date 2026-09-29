@@ -2,3 +2,7 @@
 **/bin
 **/obj
 tests
+.venv
+training/data
+training/runs
+**/__pycache__

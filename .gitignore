@@ -4,3 +4,8 @@
 .idea/
 *.user
 .env
+.venv/
+**/__pycache__/
+*.pyc
+training/data/
+training/runs/

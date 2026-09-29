@@ -5,6 +5,23 @@ namespace LinkxAi.Tests.Unit;
 
 public sealed class MoveSearchTests
 {
+    [Fact]
+    public void Find_ShouldUseInjectedEvaluation_WithoutAllowingItToOverrideTerminalResults()
+    {
+        var position = GamePosition.Create();
+        var decision = MoveSearch.Find(position, maxDepth: 1,
+            evaluate: (state, player) => state.GetCell(8, 8) == player ? 100 : -100);
+        Assert.Equal(PlayerColor.Blue, position.Play(decision.Move).GetCell(8, 8));
+
+        var winning = GamePosition.Replay(WinningPosition);
+        var win = MoveSearch.Find(winning, maxDepth: 1, evaluate: (_, _) => -10_000);
+        Assert.True(win.Exact);
+        Assert.Equal(PlayerColor.Blue, winning.Play(win.Move).Result?.Winner);
+        var overconfident = MoveSearch.Find(position, maxDepth: 1, evaluate: (_, _) => int.MaxValue);
+        Assert.False(overconfident.Exact);
+        Assert.True(overconfident.Score < 1_000_000);
+    }
+
     private const string WinningPosition = "4Lr32 4Ss3 4Lr32 3Ir12 3Ir13 3Ir14";
 
     [Fact]

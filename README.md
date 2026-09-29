@@ -39,7 +39,9 @@ node scripts/generate-reference-fixtures.mjs /chemin/vers/linkx 100 > /tmp/linkx
 
 La recherche actuelle évalue les chemins de connexion, les réserves et les plus grandes zones. Elle partage les règles testées de `GamePosition`, possède une table de transposition propre à chaque appel et distingue une estimation d'un résultat de fin de partie prouvé. Elle est déterministe avec un budget de nœuds ; avec un budget de temps, la profondeur atteinte dépend de la machine.
 
-Le professeur initial retenu pour les futures données est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
+Le professeur utilisé pour le premier entraînement est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
+
+Un [premier modèle expérimental et ses poids](models/pilot-v1) sont disponibles. L'[entraînement local](training/README.md) utilise la Radeon, puis exporte un modèle ONNX vérifié sur CPU. L'API actuelle conserve sa recherche classique jusqu'à la validation du réseau en parties.
 
 L'outil d'analyse lit une requête JSON par ligne et écrit un résultat JSON par ligne, avec `move`, `score`, `depth`, `nodes`, `exact` et `elapsedMs`. Le score est donné du point de vue du joueur au trait dans la position de départ. `elapsedMs` mesure la recherche après rejeu, pour comparer des budgets de recherche égaux :
 

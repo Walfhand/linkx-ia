@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.30.0" />
     <ProjectReference Include="../../src/LinkxAi.Api/LinkxAi.Api.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,146 @@
+{
+  "format": "linkx-value-v1",
+  "status": "experimental",
+  "teacher_commit": "f8f07bdc6c042d11105ca0da24f00d32e1238e01",
+  "architecture": [
+    176,
+    128,
+    32,
+    1
+  ],
+  "activations": [
+    "relu",
+    "relu",
+    "tanh"
+  ],
+  "parameters": 26817,
+  "feature_order": "own cells row-major (81), opponent cells (81), own reserves /2 (7), opponent reserves /2 (7)",
+  "shape_order": [
+    "mono",
+    "domino",
+    "bar3",
+    "smallL",
+    "s",
+    "t",
+    "largeL"
+  ],
+  "perspective": "side to move",
+  "seed": 42,
+  "target": "sign(score) if proven; otherwise 0.9*tanh(score/4000)+0.1*observed_game_outcome",
+  "split": "opening groups; horizontal-mirror and color-swap equivalent positions deduplicated across all partitions",
+  "raw_samples": 6917,
+  "unique_samples": 4787,
+  "generated_games": 512,
+  "reserved_positions": 260,
+  "device": "Radeon RX 7900 XTX",
+  "torch": "2.9.1+rocm7.2.1.gitff65f5bc",
+  "hip": "7.2.53211-e1a6bc5663",
+  "training_seconds": 3.8822509659803472,
+  "datasets": [
+    {
+      "file": "pilot-43101.jsonl",
+      "sha256": "67b6031ae4aa785bf239eef472fe1e6d0d2201cf13479a2c22984d8f75296b56"
+    },
+    {
+      "file": "pilot-43102.jsonl",
+      "sha256": "32ca6777100b033d29528d9a1b5691b53a82b1904463750af7a62749f56aaff5"
+    },
+    {
+      "file": "pilot-43103.jsonl",
+      "sha256": "8112a806b3b7bc0b6679f3188b0cf516922a872a8bff330b0c7f538c668246f4"
+    },
+    {
+      "file": "pilot-43104.jsonl",
+      "sha256": "c9e1129154514b0294311d5dc1a2b82aaf8e9c84b73d8d24fc7965b511be594a"
+    }
+  ],
+  "generation": [
+    {
+      "seed": 43101,
+      "maxNodes": 50000,
+      "completedGames": 128,
+      "samples": 1732,
+      "elapsedSeconds": 73.164909675
+    },
+    {
+      "seed": 43102,
+      "maxNodes": 50000,
+      "completedGames": 128,
+      "samples": 1690,
+      "elapsedSeconds": 71.325544796
+    },
+    {
+      "seed": 43103,
+      "maxNodes": 50000,
+      "completedGames": 128,
+      "samples": 1704,
+      "elapsedSeconds": 68.280505565
+    },
+    {
+      "seed": 43104,
+      "maxNodes": 50000,
+      "completedGames": 128,
+      "samples": 1791,
+      "elapsedSeconds": 75.224210821
+    }
+  ],
+  "promotion": "Not approved for tournament deployment; validation error is not an Elo measurement.",
+  "training_image": "rocm/pytorch@sha256:96a2fb24dec9896e2f8238178f0c49d0dcc4c7dcc597be09e4564316bd86d191",
+  "weights_sha256": "e8dc09b5fc349d32fb335caec50625735f3f51c138b1165af9adfb1c2f883dc6",
+  "partitions": {
+    "train": {
+      "opening_keys": [
+        ".................................................................................|22222222222222",
+        ".......................................................................2.......22|22222222221222",
+        "......................................................................2.......222|22222222222212",
+        ".....................................................................2.......222.|22222222222212",
+        "....................................................................2........22..|22222222221222",
+        "....................................................................2.......222..|22222222222212",
+        "...................................................................2........2....|22222222122222",
+        "...................................................................2........22...|22222222221222",
+        "...................................................................2.......222...|22222222222212",
+        ".............................................................2........2........2.|22222222212222",
+        "............................................................2........2........2..|22222222212222",
+        "...........................................................2........2........2...|22222222212222",
+        "...........................................................2........2........22..|22222222222221",
+        "..........................................................2........2........2....|22222222212222",
+        "..........................................................2........2........22...|22222222222221"
+      ],
+      "positions_sha256": "44e90a049b56dea0814490491f5720beebde6c98ae436a5480f0d61eb31252bb"
+    },
+    "validation": {
+      "opening_keys": [
+        ".............................................................2........2........22|22222222222221"
+      ],
+      "positions_sha256": "1535c558ce16cfc506c64ff6d4949c8ae9ec05e99a6de654b1bae57839de48fd"
+    },
+    "test": {
+      "opening_keys": [
+        "...........................................................2........2.......22...|22222222222221"
+      ],
+      "positions_sha256": "348527504181499ca5b3d8d68656ddc0674a497630767536c0fca1930cf73633"
+    }
+  },
+  "game_validation": {
+    "budget_ms": 100,
+    "exact_positions": 260,
+    "opponents": {
+      "first_legal": {
+        "wins": 34,
+        "draws": 0,
+        "losses": 0
+      },
+      "marmelab": {
+        "wins": 5,
+        "draws": 0,
+        "losses": 29
+      },
+      "classical": {
+        "wins": 17,
+        "draws": 0,
+        "losses": 17
+      }
+    },
+    "decision": "No strength gain demonstrated over the classical evaluator; not promoted."
+  }
+}
