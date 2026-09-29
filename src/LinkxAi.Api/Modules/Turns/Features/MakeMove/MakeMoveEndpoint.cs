@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using LinkxAi.Api.Modules.Turns.Domain;
 using QuickApi.Engine.Web.Endpoints;
@@ -9,12 +10,15 @@ public sealed class MakeMoveEndpoint() : MinimalEndpoint<IResult>(EndpointType.P
 {
     protected override Delegate Handler => Handle;
 
-    private static IResult Handle(Request request)
+    private static IResult Handle(Request request, CancellationToken cancellationToken)
     {
+        var clock = Stopwatch.StartNew();
         try
         {
             var turn = Turn.Create(request.Game, request.Color, request.Record, request.DeadlineMs);
-            return Results.Ok(new { move = turn.SelectMove().ToString() });
+            var budgetMs = Math.Max(0, Math.Min(4500, turn.DeadlineMs - 500));
+            var move = turn.SelectMove(() => cancellationToken.IsCancellationRequested || clock.Elapsed.TotalMilliseconds >= budgetMs);
+            return Results.Ok(new { move = move.ToString() });
         }
         catch (ArgumentException error)
         {

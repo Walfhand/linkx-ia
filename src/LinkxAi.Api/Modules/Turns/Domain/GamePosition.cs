@@ -158,7 +158,7 @@ public sealed partial class GamePosition
 
     private static PlayerColor Other(PlayerColor color) => color == PlayerColor.Blue ? PlayerColor.White : PlayerColor.Blue;
 
-    private (int Largest, bool Winning) MeasureZones(PlayerColor color)
+    internal (int Largest, bool Winning) MeasureZones(PlayerColor color)
     {
         var visited = new bool[81];
         var largest = 0;

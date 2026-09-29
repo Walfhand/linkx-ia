@@ -12,7 +12,7 @@ dotnet run --project src/LinkxAi.Api
 ```
 
 - `GET /api/v1/health` répond `200 ok`.
-- `POST /api/v1/move` accepte le JSON du protocole, y compris un `record` vide ou déjà entamé et une version `protocol` inconnue. Il rejoue la partie et répond `200` avec un unique coup légal canonique, par exemple `{"move":"11"}` sur le plateau vide. Le choix est déterministe : le premier coup légal, sans recherche stratégique à ce stade.
+- `POST /api/v1/move` accepte le JSON du protocole, y compris un `record` vide ou déjà entamé et une version `protocol` inconnue. Il rejoue la partie et répond `200` avec un unique coup légal canonique. Une recherche alpha-bêta approfondit par paliers et garde le dernier palier terminé. Son budget est borné à `max(0, min(4500, deadline_ms - 500))` millisecondes, avec un maximum de 100 000 nœuds ; si aucun palier ne termine, le premier coup légal sert de secours.
 - Le moteur reconstitue plateau, réserves et joueur au trait ; il applique rotations, miroirs, chute, support intégral, connexions par côtés et diagonales, passes forcées et départage par la plus grande zone. Les passes peuvent être omises dans `record`. Les objets de position restent inchangés après une pose, réussie ou refusée : une pose réussie produit une nouvelle position.
 - Un `record` illégal, une partie terminée ou une couleur incohérente avec le trait reçoit `400` avec les erreurs de validation. Les erreurs de notation indiquent le jeton, son rang à partir de 1 (hors indication du premier joueur) et la raison. Le service ne renvoie jamais `--`. La notation vide commence avec les bleus ; pour commencer avec les blancs, envoyer `record: "w"`.
 - Si `LINKX_SECRET` est défini, l'API exige `X-Linkx-Timestamp` et `X-Linkx-Signature` sur `/move`. Le HMAC-SHA256 porte sur `<timestamp>.<corps exact>` ; la fenêtre d'horodatage admise est de cinq minutes. Sans secret configuré, la vérification est désactivée, comme le permet le protocole.
@@ -34,3 +34,25 @@ La suite unitaire compare aussi le moteur à 54 positions et refus enregistrés 
 ```bash
 node scripts/generate-reference-fixtures.mjs /chemin/vers/linkx 100 > /tmp/linkx-reference-cases.json
 ```
+
+## Recherche et professeur d'entraînement
+
+La recherche actuelle évalue les chemins de connexion, les réserves et les plus grandes zones. Elle partage les règles testées de `GamePosition`, possède une table de transposition propre à chaque appel et distingue une estimation d'un résultat de fin de partie prouvé. Elle est déterministe avec un budget de nœuds ; avec un budget de temps, la profondeur atteinte dépend de la machine.
+
+Le professeur initial retenu pour les futures données est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
+
+L'outil d'analyse lit une requête JSON par ligne et écrit un résultat JSON par ligne, avec `move`, `score`, `depth`, `nodes`, `exact` et `elapsedMs`. Le score est donné du point de vue du joueur au trait dans la position de départ. `elapsedMs` mesure la recherche après rejeu, pour comparer des budgets de recherche égaux :
+
+```bash
+dotnet build tools/LinkxAi.Analysis -c Release
+echo '{"record":"15","budgetMs":1000,"maxNodes":10000}' | dotnet tools/LinkxAi.Analysis/bin/Release/net10.0/LinkxAi.Analysis.dll
+```
+
+Pour reconstruire le banc de fins de partie puis mesurer le candidat, utiliser le même clone de référence que pour le corpus des règles :
+
+```bash
+node scripts/generate-search-benchmark.mjs /chemin/vers/linkx /tmp/linkx-reference-cases.json > /tmp/endgames.json
+node scripts/validate-teacher.mjs /chemin/vers/linkx /tmp/endgames.json 100 > /tmp/teacher-validation.json
+```
+
+Le solveur du banc explore exhaustivement les fins de partie sans heuristique et écarte toute position qu'il ne termine pas. Ces positions sont réservées à la validation et ne doivent pas servir à entraîner le futur réseau.

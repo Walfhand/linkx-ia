@@ -1,0 +1,677 @@
+{
+  "referenceCommit": "f8f07bdc6c042d11105ca0da24f00d32e1238e01",
+  "method": "exhaustive minimax; terminal outcomes only; incomplete cases discarded",
+  "skipped": 0,
+  "cases": [
+    {
+      "record": "3Ir16 4Lr34 4Lsr27 4Lsr21 18 2r14 4Ss1 4Ss6 3Lr16 4Ss1 3Ir18 2r16 2r19 17 19 3Lr16 3Lr11 3Ir13",
+      "value": -1,
+      "optimalMoves": [
+        "21",
+        "2r11",
+        "2r12",
+        "2r13",
+        "2r14",
+        "2r15",
+        "2r18",
+        "2r19",
+        "4S3",
+        "4Ss8",
+        "4Tr18",
+        "4Tr33"
+      ],
+      "outcomes": [
+        {
+          "move": "21",
+          "value": -1
+        },
+        {
+          "move": "2r11",
+          "value": -1
+        },
+        {
+          "move": "2r12",
+          "value": -1
+        },
+        {
+          "move": "2r13",
+          "value": -1
+        },
+        {
+          "move": "2r14",
+          "value": -1
+        },
+        {
+          "move": "2r15",
+          "value": -1
+        },
+        {
+          "move": "2r18",
+          "value": -1
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        },
+        {
+          "move": "4S3",
+          "value": -1
+        },
+        {
+          "move": "4Ss8",
+          "value": -1
+        },
+        {
+          "move": "4Tr18",
+          "value": -1
+        },
+        {
+          "move": "4Tr33",
+          "value": -1
+        }
+      ],
+      "nodes": 48522,
+      "reference": {
+        "move": "4Tr18",
+        "depth": 7,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "w 4Tr27 3Lr21 3Lr18 4Lsr23 2r16 4Tr13 4Lr38 4S5 3Ir13 13 4S5 2r15 3Ir14 4S1 4Tr23 3Ir12 16 11",
+      "value": -1,
+      "optimalMoves": [
+        "11",
+        "12",
+        "13",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "2r11",
+        "2r12",
+        "2r16",
+        "2r17",
+        "2r18",
+        "2r19",
+        "3L2",
+        "3Lr15",
+        "4Lr18"
+      ],
+      "outcomes": [
+        {
+          "move": "11",
+          "value": -1
+        },
+        {
+          "move": "12",
+          "value": -1
+        },
+        {
+          "move": "13",
+          "value": -1
+        },
+        {
+          "move": "15",
+          "value": -1
+        },
+        {
+          "move": "16",
+          "value": -1
+        },
+        {
+          "move": "17",
+          "value": -1
+        },
+        {
+          "move": "18",
+          "value": -1
+        },
+        {
+          "move": "19",
+          "value": -1
+        },
+        {
+          "move": "2r11",
+          "value": -1
+        },
+        {
+          "move": "2r12",
+          "value": -1
+        },
+        {
+          "move": "2r16",
+          "value": -1
+        },
+        {
+          "move": "2r17",
+          "value": -1
+        },
+        {
+          "move": "2r18",
+          "value": -1
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        },
+        {
+          "move": "3L2",
+          "value": -1
+        },
+        {
+          "move": "3Lr15",
+          "value": -1
+        },
+        {
+          "move": "4Lr18",
+          "value": -1
+        }
+      ],
+      "nodes": 38588,
+      "reference": {
+        "move": "3L2",
+        "depth": 6,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "3Lr25 3Lr31 12 4Lr12 11 4Lsr21 4Lr32 19 4Tr38 4S4 4Lsr31 3Ir17 2r13 4Tr18 3Ir16 2r15 3Ir18 11",
+      "value": -1,
+      "optimalMoves": [
+        "25",
+        "2r13",
+        "2r14",
+        "2r15",
+        "2r16",
+        "2r17",
+        "2r18",
+        "2r19",
+        "3Lr12",
+        "3Lr25",
+        "3Lr35"
+      ],
+      "outcomes": [
+        {
+          "move": "25",
+          "value": -1
+        },
+        {
+          "move": "2r13",
+          "value": -1
+        },
+        {
+          "move": "2r14",
+          "value": -1
+        },
+        {
+          "move": "2r15",
+          "value": -1
+        },
+        {
+          "move": "2r16",
+          "value": -1
+        },
+        {
+          "move": "2r17",
+          "value": -1
+        },
+        {
+          "move": "2r18",
+          "value": -1
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        },
+        {
+          "move": "3Lr12",
+          "value": -1
+        },
+        {
+          "move": "3Lr25",
+          "value": -1
+        },
+        {
+          "move": "3Lr35",
+          "value": -1
+        }
+      ],
+      "nodes": 21119,
+      "reference": {
+        "move": "3Lr25",
+        "depth": 5,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "w 3I4 3Lr37 3L6 3Ir14 2r19 12 3Ir17 4S1 13 4S1 3L8 18 11 3Ir13 2r14 4Lsr11 4Tr18 2r16 4Tr36 3Lr16 4Lsr33 4Tr38",
+      "value": 0,
+      "optimalMoves": [
+        "4Sr12"
+      ],
+      "outcomes": [
+        {
+          "move": "4Sr12",
+          "value": 0
+        },
+        {
+          "move": "4Lsr31",
+          "value": -1
+        }
+      ],
+      "nodes": 2,
+      "reference": {
+        "move": "4Sr12",
+        "depth": 6,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "w 3I4 3Lr37 3L6 3Ir14 2r19 12 3Ir17 4S1 13 4S1 3L8 18 11 3Ir13 2r14 4Lsr11 4Tr18 2r16 4Tr36 3Lr16 4Lsr33 4Tr38 4Sr12",
+      "value": 0,
+      "optimalMoves": [
+        "2r15"
+      ],
+      "outcomes": [
+        {
+          "move": "2r11",
+          "value": -1
+        },
+        {
+          "move": "2r15",
+          "value": 0
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        }
+      ],
+      "nodes": 0,
+      "reference": {
+        "move": "2r15",
+        "depth": 5,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "w 2r19 3Lr24 3Lr31 18 16 4Tr33 4Tr13 2r13 12 2r12 4S8 4Ss6 4S5 16 4Tr37 3Ir17 3Ir14 3Ir15",
+      "value": 1,
+      "optimalMoves": [
+        "2r13",
+        "2r15",
+        "3Ir13",
+        "3Lr14",
+        "4Lsr31",
+        "4Lsr32",
+        "4Lsr33"
+      ],
+      "outcomes": [
+        {
+          "move": "28",
+          "value": -1
+        },
+        {
+          "move": "2r11",
+          "value": -1
+        },
+        {
+          "move": "2r12",
+          "value": -1
+        },
+        {
+          "move": "2r13",
+          "value": 1
+        },
+        {
+          "move": "2r15",
+          "value": 1
+        },
+        {
+          "move": "2r16",
+          "value": -1
+        },
+        {
+          "move": "2r18",
+          "value": -1
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        },
+        {
+          "move": "3Ir11",
+          "value": -1
+        },
+        {
+          "move": "3Ir12",
+          "value": -1
+        },
+        {
+          "move": "3Ir13",
+          "value": 1
+        },
+        {
+          "move": "3Ir16",
+          "value": -1
+        },
+        {
+          "move": "3Ir18",
+          "value": -1
+        },
+        {
+          "move": "3Ir19",
+          "value": -1
+        },
+        {
+          "move": "3Lr14",
+          "value": 1
+        },
+        {
+          "move": "3Lr15",
+          "value": -1
+        },
+        {
+          "move": "3Lr28",
+          "value": -1
+        },
+        {
+          "move": "3Lr38",
+          "value": -1
+        },
+        {
+          "move": "4Lr38",
+          "value": -1
+        },
+        {
+          "move": "4Lsr18",
+          "value": -1
+        },
+        {
+          "move": "4Lsr31",
+          "value": 1
+        },
+        {
+          "move": "4Lsr32",
+          "value": 1
+        },
+        {
+          "move": "4Lsr33",
+          "value": 1
+        },
+        {
+          "move": "4Lsr36",
+          "value": -1
+        }
+      ],
+      "nodes": 86943,
+      "reference": {
+        "move": "2r15",
+        "depth": 1,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "3Lr24 3Lr37 3Lr18 2r15 4Lsr18 3Lr32 16 2r19 23 13 11 4Ss3 4Lr34 3Ir12 4S6 13 3Ir11 3Ir15",
+      "value": 1,
+      "optimalMoves": [
+        "3Ir13",
+        "4S2",
+        "4S3",
+        "4Tr32",
+        "4Tr33"
+      ],
+      "outcomes": [
+        {
+          "move": "2r11",
+          "value": -1
+        },
+        {
+          "move": "2r12",
+          "value": -1
+        },
+        {
+          "move": "2r13",
+          "value": -1
+        },
+        {
+          "move": "2r14",
+          "value": -1
+        },
+        {
+          "move": "2r16",
+          "value": -1
+        },
+        {
+          "move": "2r17",
+          "value": -1
+        },
+        {
+          "move": "2r18",
+          "value": -1
+        },
+        {
+          "move": "2r19",
+          "value": -1
+        },
+        {
+          "move": "3Ir11",
+          "value": -1
+        },
+        {
+          "move": "3Ir12",
+          "value": -1
+        },
+        {
+          "move": "3Ir13",
+          "value": 1
+        },
+        {
+          "move": "3Ir16",
+          "value": -1
+        },
+        {
+          "move": "3Ir17",
+          "value": -1
+        },
+        {
+          "move": "3Ir18",
+          "value": -1
+        },
+        {
+          "move": "4S1",
+          "value": -1
+        },
+        {
+          "move": "4S2",
+          "value": 1
+        },
+        {
+          "move": "4S3",
+          "value": 1
+        },
+        {
+          "move": "4S6",
+          "value": -1
+        },
+        {
+          "move": "4Ss7",
+          "value": -1
+        },
+        {
+          "move": "4Tr17",
+          "value": -1
+        },
+        {
+          "move": "4Tr31",
+          "value": -1
+        },
+        {
+          "move": "4Tr32",
+          "value": 1
+        },
+        {
+          "move": "4Tr33",
+          "value": 1
+        },
+        {
+          "move": "4Tr36",
+          "value": -1
+        }
+      ],
+      "nodes": 55332,
+      "reference": {
+        "move": "3Ir13",
+        "depth": 3,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "22 4Lsr18 3Lr35 4S7 3L6 4Lr27 18 4Tr31 3Ir14 2r11 4Tr12 11 2r17 3L5 3Ir11 2r17 4T3 3Lr33",
+      "value": 1,
+      "optimalMoves": [
+        "4Ss4",
+        "4Ss5"
+      ],
+      "outcomes": [
+        {
+          "move": "12",
+          "value": -1
+        },
+        {
+          "move": "13",
+          "value": -1
+        },
+        {
+          "move": "14",
+          "value": -1
+        },
+        {
+          "move": "15",
+          "value": -1
+        },
+        {
+          "move": "16",
+          "value": -1
+        },
+        {
+          "move": "17",
+          "value": -1
+        },
+        {
+          "move": "18",
+          "value": -1
+        },
+        {
+          "move": "19",
+          "value": -1
+        },
+        {
+          "move": "4Ss3",
+          "value": -1
+        },
+        {
+          "move": "4Ss4",
+          "value": 1
+        },
+        {
+          "move": "4Ss5",
+          "value": 1
+        },
+        {
+          "move": "4Lr38",
+          "value": -1
+        },
+        {
+          "move": "4Lsr18",
+          "value": -1
+        }
+      ],
+      "nodes": 53894,
+      "reference": {
+        "move": "4Ss5",
+        "depth": 3,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "3Ir16 4Lr34 4Lsr27 4Lsr21 18 2r14 4Ss1 4Ss6 3Lr16 4Ss1 3Ir18 2r16 2r19 17 19 3Lr16 3Lr11 3Ir13 2r12 4Tr18 4S3 4Tr38 4Tr33 19 --",
+      "value": 1,
+      "optimalMoves": [
+        "3Ir15"
+      ],
+      "outcomes": [
+        {
+          "move": "3Ir15",
+          "value": 1
+        }
+      ],
+      "nodes": 0,
+      "reference": {
+        "move": "3Ir15",
+        "depth": 1,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "3Ir16 4Lr34 4Lsr27 4Lsr21 18 2r14 4Ss1 4Ss6 3Lr16 4Ss1 3Ir18 2r16 2r19 17 19 3Lr16 3Lr11 3Ir13 2r12 4Tr18 4S3 4Tr38 4Tr33 11 --",
+      "value": 1,
+      "optimalMoves": [
+        "3Ir15"
+      ],
+      "outcomes": [
+        {
+          "move": "3Ir15",
+          "value": 1
+        }
+      ],
+      "nodes": 0,
+      "reference": {
+        "move": "3Ir15",
+        "depth": 1,
+        "exact": true,
+        "correct": true
+      }
+    },
+    {
+      "record": "4Tr26 4Lsr11 3Lr24 3Lr15 4Tr33 2r18 3Lr32 11 3Ir11 2r14 3Ir18 4Lr31 2r12 12 16 3Ir15 4Lsr13 3Ir15 2r18 -- 4Lsr33 -- 17 4Ss6 4Ss6",
+      "value": -1,
+      "optimalMoves": [
+        "3L7",
+        "3Lr16",
+        "4T6"
+      ],
+      "outcomes": [
+        {
+          "move": "3L7",
+          "value": -1
+        },
+        {
+          "move": "3Lr16",
+          "value": -1
+        },
+        {
+          "move": "4T6",
+          "value": -1
+        }
+      ],
+      "nodes": 0,
+      "reference": {
+        "move": "3L7",
+        "depth": 1,
+        "exact": true,
+        "correct": true
+      }
+    }
+  ]
+}

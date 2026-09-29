@@ -12,6 +12,35 @@ namespace LinkxAi.Tests.Integration;
 public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
 {
     [Fact]
+    public async Task MoveEndpoint_ShouldTakeWinningMove_WhenConnectionCanBeCompleted()
+    {
+        const string record = "4Lr32 4Ss3 4Lr32 3Ir12 3Ir13 3Ir14";
+        using var client = factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/v1/move", new
+        {
+            protocol = 1, game = "winning-turn", color = "blue", record, deadline_ms = 1000
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var token = (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("move").GetString()!;
+        Assert.Equal(PlayerColor.Blue, GamePosition.Replay(record).Play(Move.Parse(token)).Result?.Winner);
+    }
+
+    [Fact]
+    public async Task MoveEndpoint_ShouldReturnLegalFallback_WhenDeadlineLeavesNoSearchTime()
+    {
+        using var client = factory.CreateClient();
+        var response = await client.PostAsJsonAsync("/api/v1/move", new
+        {
+            protocol = 1, game = "short-turn", color = "blue", record = "11 12 13 14", deadline_ms = 1
+        });
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var token = (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("move").GetString()!;
+        Assert.Contains(Move.Parse(token), GamePosition.Replay("11 12 13 14").GetLegalMoves());
+    }
+
+    [Fact]
     public async Task HealthEndpoint_ShouldReturnOk_WhenServiceIsRunning()
     {
         using var client = factory.CreateClient();
@@ -40,7 +69,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
             game = "game-1",
             color,
             record,
-            deadline_ms = 6000
+            deadline_ms = 50
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -66,7 +95,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
             game = "game-1",
             color = "red",
             record = "",
-            deadline_ms = 6000
+            deadline_ms = 50
         });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -83,7 +112,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
             game = "game-1",
             color = "white",
             record = "w",
-            deadline_ms = 6000
+            deadline_ms = 50
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -97,7 +126,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
 
         var response = await client.PostAsJsonAsync("/api/v1/move", new
         {
-            protocol = 1, game = "game-1", color = "blue", record = "", deadline_ms = 6000
+            protocol = 1, game = "game-1", color = "blue", record = "", deadline_ms = 50
         });
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
@@ -108,7 +137,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
     {
         using var securedFactory = factory.WithWebHostBuilder(builder => builder.UseSetting("Linkx:Secret", "test-secret"));
         using var client = securedFactory.CreateClient();
-        const string body = """{"protocol":1,"game":"game-1","color":"white","record":"b 15","deadline_ms":6000}""";
+        const string body = """{"protocol":1,"game":"game-1","color":"white","record":"b 15","deadline_ms":50}""";
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
         var bytes = Encoding.UTF8.GetBytes($"{timestamp}.{body}");
         var signature = Convert.ToHexStringLower(HMACSHA256.HashData(Encoding.UTF8.GetBytes("test-secret"), bytes));
@@ -140,7 +169,7 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
 
         var response = await client.PostAsJsonAsync("/api/v1/move", new
         {
-            protocol = 1, game = "game-1", color, record, deadline_ms = 6000
+            protocol = 1, game = "game-1", color, record, deadline_ms = 50
         });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -150,19 +179,17 @@ public sealed class ApiTests(WebApplicationFactory<Program> factory) : IClassFix
     }
 
     [Fact]
-    public async Task MoveEndpoint_ShouldIsolateSimultaneousGamesAndReturnDeterministicMoves()
+    public async Task MoveEndpoint_ShouldIsolateSimultaneousSearches_WhenPositionsDiffer()
     {
         using var client = factory.CreateClient();
-        var records = new[] { "11 12 13 14", "w 11 12 13 14" };
+        var records = new[] { "11 12 13 14", "w 3Ir11 3Ir11" };
         var requests = Enumerable.Range(0, 2).Select(async index =>
         {
-            var payload = new { protocol = 1, game = $"game-{index}", color = index == 0 ? "blue" : "white", record = records[index], deadline_ms = 6000 };
+            var payload = new { protocol = 1, game = $"game-{index}", color = index == 0 ? "blue" : "white", record = records[index], deadline_ms = 600 };
             var response = await client.PostAsJsonAsync("/api/v1/move", payload);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var token = (await response.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("move").GetString()!;
             Assert.Contains(Move.Parse(token), GamePosition.Replay(records[index]).GetLegalMoves());
-            var repeated = await client.PostAsJsonAsync("/api/v1/move", payload);
-            Assert.Equal(token, (await repeated.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("move").GetString());
         });
 
         await Task.WhenAll(requests);
