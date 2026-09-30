@@ -12,6 +12,7 @@ while (Console.ReadLine() is { } line)
         var request = JsonSerializer.Deserialize<AnalysisRequest>(line, json)
             ?? throw new ArgumentException("An analysis request is required.");
         ArgumentOutOfRangeException.ThrowIfNegative(request.BudgetMs);
+        if (request.SampleCount is < 0 or > 32) throw new ArgumentOutOfRangeException(nameof(request.SampleCount));
         var position = GamePosition.Replay(request.Record);
         if (request.EvaluateOnly)
         {
@@ -21,14 +22,23 @@ while (Console.ReadLine() is { } line)
         }
         var clock = Stopwatch.StartNew();
         var accumulator = nnue?.CreateAccumulator(position);
+        var samples = request.SampleCount == 0 ? null : new SearchSamples(request.SampleCount, request.SampleSeed);
         Func<GamePosition, PlayerColor, int>? evaluate = accumulator is not null ? accumulator.Score : model is not null ? model.Score : null;
+        Action<GamePosition>? push = accumulator is null ? null : accumulator.Push;
+        Action? pop = accumulator is null ? null : accumulator.Pop;
+        if (samples is not null)
+        {
+            push = child => { accumulator?.Push(child); samples.Consider(child); };
+            pop = () => accumulator?.Pop();
+        }
         var decision = MoveSearch.Find(position, request.MaxDepth, request.MaxNodes,
             () => clock.Elapsed.TotalMilliseconds >= request.BudgetMs, evaluate,
-            accumulator is null ? null : accumulator.Push, accumulator is null ? null : accumulator.Pop);
+            push, pop);
         Console.WriteLine(JsonSerializer.Serialize(new
         {
             move = decision.Move.ToString(), decision.Score, depth = decision.CompletedDepth,
-            decision.Nodes, decision.Exact, elapsedMs = clock.Elapsed.TotalMilliseconds
+            decision.Nodes, decision.Exact, elapsedMs = clock.Elapsed.TotalMilliseconds,
+            samples = samples?.Records, sampledFrom = samples?.Seen
         }, json));
     }
     catch (Exception error) when (error is ArgumentException or JsonException)
@@ -37,4 +47,5 @@ while (Console.ReadLine() is { } line)
     }
 }
 
-internal sealed record AnalysisRequest(string Record, int MaxDepth = 28, int MaxNodes = int.MaxValue, int BudgetMs = 1000, bool EvaluateOnly = false);
+internal sealed record AnalysisRequest(string Record, int MaxDepth = 28, int MaxNodes = int.MaxValue, int BudgetMs = 1000,
+    bool EvaluateOnly = false, int SampleCount = 0, int SampleSeed = 42);

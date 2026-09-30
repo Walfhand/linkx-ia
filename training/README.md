@@ -2,6 +2,27 @@
 
 Le premier MLP est disponible dans [models/pilot-v1](../models/pilot-v1). La campagne [NNUE v1](../models/nnue-v1) compare trois réseaux à calcul incrémental. Ces modèles sont expérimentaux ; aucune force Elo officielle n'est mesurée.
 
+## Boucle itérative
+
+Le [premier cycle exécuté](../models/loop-v1) collecte les parties du NNUE et un réservoir borné de positions produites pendant ses recherches. Les positions prélevées sont réanalysées comme des racines par Marmelab : les bornes internes du moteur ne deviennent pas des labels exacts. Un état hypothétique n'a pas de résultat de partie observé ; son `outcome` reste `null` et sa cible vient uniquement de la réanalyse. Les résultats prouvés restent prioritaires.
+
+```bash
+dotnet build LinkxAi.slnx -c Release
+.venv/bin/python training/loop.py --reference /chemin/linkx-reference --parent models/nnue-v1/h512 --output training/runs/loop-v1 --iterations 1
+# Même configuration : reprendre les étapes terminées et ajouter une deuxième itération.
+.venv/bin/python training/loop.py --reference /chemin/linkx-reference --parent models/nnue-v1/h512 --output training/runs/loop-v1 --iterations 2
+```
+
+Le premier mode accepte les NNUE H=512. Il utilise l'image Radeon vérifiée ci-dessous. Les fichiers du parent, du nouveau modèle et de sortie doivent se trouver dans le workspace monté dans le conteneur ; le clone de règles peut être ailleurs sur l'hôte. Les corpus du parent doivent être disponibles dans `training/data` avec leurs empreintes d'origine.
+
+Par défaut, chaque itération génère 1 000 parties en quatre lots, utilise 5 000 nœuds pour les acteurs, 200 000 pour les labels et deux prélèvements par recherche. Les options `--games`, `--shards`, `--actor-nodes`, `--teacher-nodes`, `--samples` et `--match-budget` permettent de changer ces budgets dans un nouveau répertoire d'expérience. Une configuration existante est verrouillée, hors nombre d'itérations. Les lots terminés sont réutilisés ; les lots incomplets sont conservés et refusés pour inspection.
+
+La collecte se limite aux familles d'entraînement du parent et exclut les clés de ses validations/tests, en plus du fichier global de réservation. Le contrôleur vérifie ensuite les empreintes exactes des partitions. `--split-seed` est indépendant de `--seed`. `--resume-weights` reprend le parent et permet de le conserver si l'apprentissage n'améliore pas la validation. `--prefer-stronger-labels` préfère les preuves et analyses plus profondes pour les doublons d'entraînement, sans modifier les labels de validation/test.
+
+Trois réentraînements sont comparés sur les ouvertures de développement. Un candidat unique passe ensuite 128 parties contre le parent et 128 contre Marmelab ; le parent joue les mêmes 128 contre Marmelab. Le panel final est nouveau à chaque itération et filtre les ancêtres possibles de tout état connu. Le test de promotion est conservateur et raisonne par paires d'ouvertures : borne basse unilatérale de Hoeffding à 95 % supérieure à 50 % contre le parent, aucune baisse observée contre le professeur, aucune fuite de positions et 260 fins exactes réussies. Il ne garantit pas un Elo général ; il suppose des départs appariés échantillonnés indépendamment. Une promotion change seulement le parent local de la boucle, sans déployer l'API.
+
+L'état atomique du contrôleur est dans `state.json`. Les modèles, matchs complets et décisions de chaque passage sont dans `iteration-N`. Les corpus et essais locaux restent ignorés par Git ; les modèles et rapports publiés d'une expérience sont copiés dans `models` et `benchmarks`.
+
 ## NNUE v1
 
 La campagne utilise 10 000 parties, réparties en quatre lots de 2 500, aux graines 53201 à 53204. Le professeur conserve son budget de 50 000 nœuds par position et 20 % d'exploration. L'ensemble de données et les partitions sont identiques pour les trois tailles.
@@ -42,7 +63,7 @@ Ces matchs sont un diagnostic de premier essai : les 17 ouvertures recoupent les
 
 Le moteur maître Marmelab sert de professeur au commit `f8f07bdc6c042d11105ca0da24f00d32e1238e01`. Le générateur vérifie ce commit et refuse un domaine modifié. Les recherches sont bornées aux nœuds pour être reproductibles. Chaque partie comporte 20 % d'exploration parmi les coups légaux ; chaque position reçoit néanmoins une analyse du professeur. Les résultats prouvés gardent leur valeur exacte même si une erreur jouée ensuite change l'issue de la partie.
 
-Les positions de `holdout-records.json`, leurs miroirs horizontaux et leurs permutations de couleurs sont exclues. Le fichier contient les 260 fins exactes initiales et, depuis le diagnostic, 966 états de validation supplémentaires, soit 1 226 états réservés. Les manifestes des modèles historiques conservent la liste qui était réservée lors de leur génération. Les ensembles entraînement/validation/test sont séparés par familles d'ouvertures, avec toutes les parties d'une famille dans le même ensemble. Les positions équivalentes sont ensuite dédupliquées entre ensembles. Seul l'entraînement reçoit une augmentation par miroir ; aucune rotation ni inversion verticale n'est utilisée.
+Les positions de `holdout-records.json`, leurs miroirs horizontaux et leurs permutations de couleurs sont exclues des nouvelles générations. Le fichier contient les 260 fins exactes initiales, les états de validation du diagnostic et ceux des évaluations suivantes. Les manifestes historiques conservent la liste réservée lors de leur génération. Les ensembles entraînement/validation/test sont séparés par familles d'ouvertures, avec toutes les parties d'une famille dans le même ensemble. Les positions équivalentes sont ensuite dédupliquées entre ensembles. Seul l'entraînement reçoit une augmentation par miroir ; aucune rotation ni inversion verticale n'est utilisée.
 
 Node.js 22.18 ou supérieur suffit à générer les données. Avec le clone de référence au bon commit :
 

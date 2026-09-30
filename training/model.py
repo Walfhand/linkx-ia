@@ -15,12 +15,16 @@ class ValueNet(nn.Module):
         return self.layers(features)
 
 
-def fit(model, features, labels, validation, expected, epochs=200, batch_size=256, seed=42):
+def fit(model, features, labels, validation, expected, epochs=200, batch_size=256, seed=42, keep_initial=False):
     if min(len(features), len(validation), epochs, batch_size) <= 0:
         raise ValueError("Training and validation data, epochs and batch size must be positive")
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.0001)
     random = torch.Generator(device=features.device).manual_seed(seed)
-    best_loss, best_epoch, best_weights = float("inf"), 0, None
+    model.eval()
+    with torch.no_grad():
+        initial_loss = nn.functional.mse_loss(model(validation), expected).item()
+    best_loss, best_epoch = (initial_loss if keep_initial else float("inf")), 0
+    best_weights = copy.deepcopy(model.state_dict()) if keep_initial else None
     history = []
     for epoch in range(1, epochs + 1):
         model.train()
@@ -47,4 +51,4 @@ def fit(model, features, labels, validation, expected, epochs=200, batch_size=25
             break
     model.load_state_dict(best_weights)
     model.eval()
-    return {"best_epoch": best_epoch, "history": history}
+    return {"best_epoch": best_epoch, "history": history, "initial_validation_mse": initial_loss}

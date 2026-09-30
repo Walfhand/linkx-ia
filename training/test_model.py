@@ -11,6 +11,17 @@ from export import export_model
 
 
 class ModelTests(unittest.TestCase):
+    def test_warm_start_can_keep_the_parent_when_all_updates_hurt_validation(self):
+        torch.manual_seed(4)
+        torch.set_num_threads(2)
+        features = torch.ones(32, 176)
+        model = ValueNet()
+        weights = {key: value.clone() for key, value in model.state_dict().items()}
+        result = fit(model, features, torch.ones(32, 1), features, -torch.ones(32, 1), epochs=25, keep_initial=True)
+        self.assertEqual(result['best_epoch'], 0)
+        for key, value in model.state_dict().items():
+            torch.testing.assert_close(value, weights[key], rtol=0, atol=0)
+
     def test_fit_restores_early_weights_when_later_epochs_hurt_validation(self):
         torch.manual_seed(4)
         torch.set_num_threads(2)

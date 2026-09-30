@@ -9,7 +9,7 @@ def load_corpus(paths):
     rows, metadata = [], []
     for path in sorted({Path(path) for path in paths}):
         info = json.loads(Path(str(path) + ".meta.json").read_text())
-        if info.get("schema") != 1 or info.get("shapes") != ["mono", "domino", "bar3", "smallL", "s", "t", "largeL"]:
+        if info.get("schema") not in (1, 2) or info.get("shapes") != ["mono", "domino", "bar3", "smallL", "s", "t", "largeL"]:
             raise ValueError("Unsupported corpus schema or shape order")
         if metadata and info["referenceCommit"] != metadata[0]["referenceCommit"]:
             raise ValueError("Corpora from different teacher versions cannot be mixed")
@@ -50,7 +50,10 @@ def validate_sample(row):
             raise ValueError("Expected seven reserve counts in 0..2 for each player")
     if type(row.get("score")) not in (int, float) or not math.isfinite(row["score"]):
         raise ValueError("Expected a finite teacher score")
-    if type(row.get("exact")) is not bool or type(row.get("outcome")) is not int or row["outcome"] not in (-1, 0, 1):
+    source = row.get('source', 'root')
+    valid_outcome = (source == 'tree' and row.get('outcome') is None) or (
+        source == 'root' and type(row.get('outcome')) is int and row['outcome'] in (-1, 0, 1))
+    if type(row.get("exact")) is not bool or not valid_outcome:
         raise ValueError("Invalid outcome or proof marker")
     if type(row.get("depth")) is not int or row["depth"] < 1:
         raise ValueError("Teacher must complete at least one search iteration")
@@ -76,11 +79,13 @@ def encode(row, mirror=False):
 def target(row):
     if row["exact"]:
         return float((row["score"] > 0) - (row["score"] < 0))
+    if row.get('source') == 'tree':
+        return math.tanh(row['score'] / 4000)
     # ponytail: heuristic score calibration for the pilot; fit calibration on separate games before promotion.
     return 0.9 * math.tanh(row["score"] / 4000) + 0.1 * row["outcome"]
 
 
-def split_samples(rows, seed=42):
+def split_samples(rows, seed=42, prefer_stronger=False):
     game_openings = {}
     for row in rows:
         validate_sample(row)
@@ -97,7 +102,8 @@ def split_samples(rows, seed=42):
     seen = set()
     ordered = sorted(rows, key=lambda row: (row["opening_key"], row["game_id"], row["position_key"]))
     for partition in result:
-        for row in ordered:
+        selected_order = sorted(ordered, key=lambda row: (not row['exact'], -row['depth'], -row.get('nodes', 0), row.get('source') == 'tree')) if partition == 'train' and prefer_stronger else ordered
+        for row in selected_order:
             if assignments[row["opening_key"]] != partition or row["position_key"] in seen:
                 continue
             seen.add(row["position_key"])

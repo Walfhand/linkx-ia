@@ -1,0 +1,146 @@
+{
+  "promoted": false,
+  "vs_parent": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.5859375,
+    "lower95": 0.43295332308244894,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "vs_teacher": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.3359375,
+    "lower95": 0.18295332308244897,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "parent_vs_teacher": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.234375,
+    "lower95": 0.08139082308244897,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "sufficient_parent_evidence": false,
+  "no_observed_teacher_regression": true,
+  "exact_cases_passed": true,
+  "promotion_overlap": 0,
+  "iteration": 1,
+  "parent": "models/nnue-v1/h512",
+  "selected": "training/runs/loop-v1/iteration-1/seed-43",
+  "selection": {
+    "candidate": "training/runs/loop-v1/iteration-1/seed-43",
+    "development": [
+      {
+        "candidate": "training/runs/loop-v1/iteration-1/seed-43",
+        "score": 0.4583333333333333,
+        "identical": false,
+        "validationMse": 0.3228922188282013,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 11,
+          "draws": 0,
+          "losses": 13,
+          "score": 0.4583333333333333,
+          "search": {
+            "nnue": {
+              "turns": 129,
+              "meanDepth": 3.2248062015503876,
+              "nodes": 761251,
+              "nodesPerSecond": 89391.46993836625,
+              "proven": 50,
+              "maximumMs": 100.0619,
+              "p95Ms": 100.04
+            },
+            "teacher": {
+              "turns": 130,
+              "meanDepth": 3.169230769230769,
+              "nodes": 756196,
+              "nodesPerSecond": 87466.04383543246,
+              "proven": 49,
+              "maximumMs": 100.0547,
+              "p95Ms": 100.0399
+            }
+          }
+        }
+      },
+      {
+        "candidate": "training/runs/loop-v1/iteration-1/seed-42",
+        "score": 0.4166666666666667,
+        "identical": false,
+        "validationMse": 0.33172059059143066,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 10,
+          "draws": 0,
+          "losses": 14,
+          "score": 0.4166666666666667,
+          "search": {
+            "nnue": {
+              "turns": 150,
+              "meanDepth": 3.433333333333333,
+              "nodes": 915814,
+              "nodesPerSecond": 89413.8692186428,
+              "proven": 53,
+              "maximumMs": 100.1995,
+              "p95Ms": 100.0408
+            },
+            "teacher": {
+              "turns": 153,
+              "meanDepth": 3.3137254901960786,
+              "nodes": 879194,
+              "nodesPerSecond": 85839.77437888438,
+              "proven": 57,
+              "maximumMs": 100.3484,
+              "p95Ms": 100.0453
+            }
+          }
+        }
+      },
+      {
+        "candidate": "training/runs/loop-v1/iteration-1/seed-44",
+        "score": 0.4166666666666667,
+        "identical": false,
+        "validationMse": 0.3331129550933838,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 10,
+          "draws": 0,
+          "losses": 14,
+          "score": 0.4166666666666667,
+          "search": {
+            "nnue": {
+              "turns": 135,
+              "meanDepth": 3.214814814814815,
+              "nodes": 814723,
+              "nodesPerSecond": 89053.0777102307,
+              "proven": 48,
+              "maximumMs": 100.1301,
+              "p95Ms": 100.0415
+            },
+            "teacher": {
+              "turns": 135,
+              "meanDepth": 3.303703703703704,
+              "nodes": 788633,
+              "nodesPerSecond": 86199.83332627235,
+              "proven": 53,
+              "maximumMs": 100.1966,
+              "p95Ms": 100.0457
+            }
+          }
+        }
+      }
+    ],
+    "identical_to_parent": false,
+    "promotion_overlap": 0,
+    "exact_cases_passed": true,
+    "exact": {
+      "cases": 260,
+      "correct": 260,
+      "errors": []
+    }
+  }
+}

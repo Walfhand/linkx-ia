@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
-import { positionKey, playerValue, assessMove, summarize, playGame, selectOpenings } from './diagnose-nnue.mjs';
+import { positionKey, playerValue, assessMove, summarize, playGame, selectOpenings, descendantExclusion } from './diagnose-nnue.mjs';
 import { analysisWorker, analysisAssembly } from './analysis-worker.mjs';
 
 test('native worker preserves queued response order and rejects protocol errors', { skip: !fs.existsSync(analysisAssembly) }, async () => {
@@ -47,6 +47,20 @@ test('a proven blunder requires a proven non-losing alternative, including after
     assert.equal(assessMove({ score: -999999, exact: true }, { score: 999995, exact: true }, 'blue', 'white').provenBlunder, false);
 });
 
+test('promotion starts exclude any possible known descendant, including mirrors and swapped colors', () => {
+    const stateKey = (cells, reserves = '22222222222222') => {
+        const board = Array(81).fill('.'); for (const [index, color] of cells) board[index] = color;
+        return board.join('') + '|' + reserves;
+    };
+    const known = stateKey([[72, '1'], [73, '1'], [80, '2']], '02222221222222');
+    const excluded = descendantExclusion(new Set([known]));
+    assert.equal(excluded(stateKey([[72, '1']], '12222222222222')), true);
+    assert.equal(excluded(stateKey([[80, '1']], '12222222222222')), true);
+    assert.equal(excluded(stateKey([[72, '2']], '22222221222222')), true);
+    assert.equal(excluded(stateKey([[75, '1']], '12222222222222')), false);
+    assert.equal(excluded(stateKey([[72, '1']], '10222222222222')), false); // A used domino cannot reappear.
+});
+
 test('new openings exclude the training positions and families, and game traces replay legally', { skip: !process.env.LINKX_REFERENCE }, async () => {
     assert.ok(process.env.LINKX_REFERENCE);
     const source = file => import(pathToFileURL(resolve(process.env.LINKX_REFERENCE, file)).href);
@@ -70,13 +84,22 @@ test('new openings exclude the training positions and families, and game traces 
         const swapped = parseGameRecord('w ' + opening.record).state;
         assert.equal(positionKey(swapped, SHAPE_IDS), opening.positionKey);
     }
+    const allFamilies = new Set(enumerateLegalMoves(empty.board, empty.inventories.blue)
+        .map(move => positionKey(parseGameRecord(token(move)).state, SHAPE_IDS)));
+    const onlyFamily = [...allFamilies][0]; allFamilies.delete(onlyFamily);
+    const shared = selectOpenings(api, allFamilies, known, 3, 912, 2000, true);
+    assert.equal(shared.length, 3);
+    assert.equal(new Set(shared.map(item => item.familyKey)).size, 1);
+    assert.equal(new Set(shared.map(item => item.positionKey)).size, 3);
     assert.equal(snapshot.legalMoves.length, 95);
     const firstLegal = async (record, state) => ({ move: token(enumerateLegalMoves(state.board, state.inventories[state.activePlayer])[0]), score: 0, depth: 0, exact: false, nodes: 0, elapsedMs: 0 });
     const game = await playGame(api, openings[0], 'blue', 100, firstLegal, firstLegal);
     assert.ok(game.turns.length > 0 && game.turns.length <= 28);
     assert.ok(parseGameRecord(game.record).state.result);
+    const excludesAncestors = descendantExclusion(new Set([positionKey(parseGameRecord(game.record).state, SHAPE_IDS)]));
     for (const turn of game.turns) {
         assert.ok(parseGameRecord(turn.record).ok);
         assert.ok(parseGameRecord(turn.record + ' ' + turn.move).ok);
+        assert.equal(excludesAncestors(positionKey(parseGameRecord(turn.record).state, SHAPE_IDS)), true);
     }
 });

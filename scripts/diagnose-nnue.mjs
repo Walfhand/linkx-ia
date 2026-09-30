@@ -20,6 +20,32 @@ export function positionKey(position, shapes) {
     return [board, mirror].sort()[0] + '|' + [own, other].flatMap(player => shapes.map(shape => position.inventories[player][shape])).join('');
 }
 
+export function descendantExclusion(keys) {
+    const bits = Array.from({ length: 81 }, (_, index) => 1n << BigInt(index));
+    function packed(key, mirror = false) {
+        let own = 0n, other = 0n;
+        for (let index = 0; index < 81; index++) {
+            const at = mirror ? Math.floor(index / 9) * 9 + 8 - index % 9 : index;
+            if (key[index] === '1') own |= bits[at];
+            if (key[index] === '2') other |= bits[at];
+        }
+        return { own, other, reserves: [...key.slice(82)].map(Number) };
+    }
+    const known = [...keys].map(key => packed(key));
+    return key => {
+        for (const root of [packed(key), packed(key, true)]) {
+            for (const swap of [false, true]) {
+                const own = swap ? root.other : root.own, other = swap ? root.own : root.other;
+                for (const state of known) {
+                    if ((state.own & own) !== own || (state.other & other) !== other) continue;
+                    if (state.reserves.every((count, index) => count <= root.reserves[swap ? (index + 7) % 14 : index])) return true;
+                }
+            }
+        }
+        return false;
+    };
+}
+
 export function playerValue(decision, movingPlayer, player) {
     const value = decision.exact ? Math.sign(decision.score) : Math.tanh(decision.score / 4000);
     return value === 0 ? 0 : movingPlayer === player ? value : -value;
@@ -48,7 +74,8 @@ export function summarize(games) {
         score: games.length ? games.reduce((sum, game) => sum + game.result, 0) / games.length : 0, search };
 }
 
-export function selectOpenings(api, families, known, count, seed, maxNodes = 50000) {
+export function selectOpenings(api, families, known, count, seed, maxNodes = 50000, allowSharedFamilies = false,
+    plies = 3, forbiddenDescendant = () => false) {
     let randomState = seed >>> 0;
     const random = () => ((randomState = (Math.imul(randomState, 1664525) + 1013904223) >>> 0) / 4294967296);
     const empty = api.parseGameRecord('').state;
@@ -58,26 +85,29 @@ export function selectOpenings(api, families, known, count, seed, maxNodes = 500
         [firstMoves[i], firstMoves[j]] = [firstMoves[j], firstMoves[i]];
     }
     const selected = [], usedFamilies = new Set(families), usedKeys = new Set(known);
+    for (let round = 0; round < (allowSharedFamilies ? count : 1); round++) {
     for (const first of firstMoves) {
         const initial = api.parseGameRecord(first).state;
         const familyKey = positionKey(initial, api.shapes);
         if (usedFamilies.has(familyKey)) continue;
         for (let attempt = 0; attempt < 50; attempt++) {
             let position = initial;
-            for (let ply = 1; ply < 3 && !position.result; ply++) {
+            for (let ply = 1; ply < plies && !position.result; ply++) {
                 const legal = api.enumerateLegalMoves(position.board, position.inventories[position.activePlayer]);
                 position = api.parseGameRecord(api.serializeGameRecord(position) + ' ' + token(api, legal[Math.floor(random() * legal.length)])).state;
             }
             const key = positionKey(position, api.shapes);
-            if (position.result || usedKeys.has(key)) continue;
+            if (position.result || usedKeys.has(key) || forbiddenDescendant(key)) continue;
             const teacher = api.searchMasterTopMoves(position, { maxNodes });
             if (teacher.exact) continue; // Avoid starts already resolved by the frozen teacher at generation budget.
             selected.push({ id: selected.length + 1, record: api.serializeGameRecord(position), familyKey, positionKey: key,
                 screening: { score: teacher.score, depth: teacher.depth, nodes: teacher.nodes, exact: teacher.exact } });
-            usedFamilies.add(familyKey); usedKeys.add(key);
+            if (!allowSharedFamilies) usedFamilies.add(familyKey);
+            usedKeys.add(key);
             break;
         }
         if (selected.length === count) return selected;
+    }
     }
     throw new Error(`Only found ${selected.length}/${count} independent opening starts.`);
 }
@@ -222,6 +252,8 @@ async function main() {
         seed: { type: 'string', default: '20260930' }, assembly: { type: 'string', default: analysisAssembly },
         nodes: { type: 'string' },
         log: { type: 'string', multiple: true, default: [] }, exclude: { type: 'string', multiple: true, default: [] },
+        'shared-families': { type: 'boolean', default: false }, 'opponent-model': { type: 'string' },
+        plies: { type: 'string', default: '3' }, 'exclude-descendants': { type: 'boolean', default: false },
     } });
     assert.ok(values.reference && values.output);
     assert.ok(['prepare', 'matches', 'analyse'].includes(values.mode));
@@ -236,16 +268,21 @@ async function main() {
         environment: { cpu: cpus()[0].model, node: process.version, dotnet: execFileSync('dotnet', ['--version'], { encoding: 'utf8' }).trim() } };
     fs.mkdirSync(dirname(values.output), { recursive: true });
     if (values.mode === 'prepare') {
-        const count = Number(values.count), seed = Number(values.seed);
-        assert.ok(Number.isInteger(count) && count > 0 && Number.isInteger(seed));
+        const count = Number(values.count), seed = Number(values.seed), plies = Number(values.plies);
+        assert.ok(Number.isInteger(count) && count > 0 && Number.isInteger(seed) && Number.isInteger(plies) && plies >= 1 && plies <= 10);
         const families = new Set(Object.values(manifest.partitions).flatMap(partition => partition.opening_keys));
+        const reserved = JSON.parse(fs.readFileSync('training/holdout-records.json'));
+        for (const record of reserved.records) known.add(positionKey(api.parseGameRecord(record).state, api.shapes));
         for (const path of values.exclude) {
             const previous = JSON.parse(fs.readFileSync(path));
             for (const opening of previous.openings) { families.add(opening.familyKey); known.add(opening.positionKey); }
         }
-        const openings = selectOpenings(api, families, known, count, seed);
+        const openings = selectOpenings(api, families, known, count, seed, 50000, values['shared-families'], plies,
+            values['exclude-descendants'] ? descendantExclusion(known) : undefined);
         fs.writeFileSync(values.output, JSON.stringify({ ...context, seed, openings,
-            method: 'Three-ply starts absent from all four NNUE datasets up to left/right mirror and color swap; distinct first-placement families outside the 17 original starting layouts; exclude starts proven by the teacher at 50000 nodes. Later descendants may overlap training.' }, null, 2) + '\n', { flag: 'wx' });
+            plies, excludedKnownDescendants: values['exclude-descendants'],
+            method: 'Starts absent from the model datasets up to horizontal mirror and color swap; outside excluded first-placement families; exclude starts proven at 50000 teacher nodes. If enabled, monotone board/reserve checks exclude every possible known descendant.',
+            sharedFirstPlacementFamilies: values['shared-families'] }, null, 2) + '\n', { flag: 'wx' });
         console.log(`Reserved ${openings.length} starts against ${known.size} corpus keys.`);
         return;
     }
@@ -261,18 +298,22 @@ async function main() {
     }
     const reservation = JSON.parse(fs.readFileSync(values.openings));
     assert.equal(reservation.referenceCommit, referenceCommit);
-    assert.equal(reservation.modelSha256, context.modelSha256);
+    // A frozen panel can compare multiple checkpoints; every checkpoint must still exclude its starting states.
     const budgetMs = Number(values.budget), maxNodes = values.nodes ? Number(values.nodes) : 2147483647;
     assert.ok(Number.isInteger(budgetMs) && budgetMs > 0 && Number.isInteger(maxNodes) && maxNodes > 0);
     const out = fs.openSync(values.output, 'wx');
     const write = object => fs.writeSync(out, JSON.stringify(object) + '\n');
     const worker = analysisWorker(values.model, values.assembly);
+    const opponent = values['opponent-model'] ? analysisWorker(values['opponent-model'], values.assembly) : null;
     try {
-        write({ type: 'context', ...context, budgetMs, maxNodes, openingsSha256: sha(fs.readFileSync(values.openings)) });
+        write({ type: 'context', ...context, budgetMs, maxNodes, openingsSha256: sha(fs.readFileSync(values.openings)),
+            opponentModel: values['opponent-model'] ?? null,
+            opponentModelSha256: opponent ? sha(fs.readFileSync(values['opponent-model'])) : null });
         await worker.analyze({ record: reservation.openings[0].record, maxNodes: 200000, budgetMs: 2000 });
-        api.searchMasterTopMoves(api.parseGameRecord(reservation.openings[0].record).state, { maxNodes: 200000 });
+        if (opponent) await opponent.analyze({ record: reservation.openings[0].record, maxNodes: 200000, budgetMs: 2000 });
+        else api.searchMasterTopMoves(api.parseGameRecord(reservation.openings[0].record).state, { maxNodes: 200000 });
         const candidate = record => worker.analyze({ record, budgetMs, maxNodes });
-        const teacher = (_, state) => {
+        const teacher = opponent ? record => opponent.analyze({ record, budgetMs, maxNodes }) : (_, state) => {
             const started = performance.now();
             const decision = api.searchMasterTopMoves(state, { budgetMs });
             return { move: token(api, decision.moves[0]), score: decision.score, depth: decision.depth,
@@ -290,7 +331,7 @@ async function main() {
             }
         }
         write({ type: 'summary', ...summarize(games) });
-    } finally { worker.stop(); fs.closeSync(out); }
+    } finally { worker.stop(); opponent?.stop(); fs.closeSync(out); }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

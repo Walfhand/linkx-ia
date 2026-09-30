@@ -21,12 +21,15 @@ def main():
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu", help="cuda also selects AMD ROCm")
     parser.add_argument("--epochs", type=int, default=200)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--split-seed", type=int, default=42)
+    parser.add_argument("--resume-weights", type=Path)
+    parser.add_argument("--prefer-stronger-labels", action="store_true")
     parser.add_argument("--nnue-width", type=int, choices=[256, 512, 1024])
     args = parser.parse_args()
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("GPU requested but PyTorch cannot access it")
     rows, metadata = load_corpus(args.data)
-    splits = split_samples(rows, seed=args.seed)
+    splits = split_samples(rows, seed=args.split_seed, prefer_stronger=args.prefer_stronger_labels)
     torch.manual_seed(args.seed)
     torch.set_num_threads(4)
     arrays = {}
@@ -38,12 +41,15 @@ def main():
         arrays[name] = (torch.from_numpy(features).to(args.device), torch.from_numpy(labels).to(args.device))
     args.output.mkdir(parents=True, exist_ok=False)
     model = (Nnue(args.nnue_width) if args.nnue_width else ValueNet()).to(args.device)
+    if args.resume_weights:
+        model.load_state_dict(torch.load(args.resume_weights, map_location=args.device, weights_only=True))
     started = time.perf_counter()
-    result = fit(model, *arrays["train"], *arrays["validation"], epochs=args.epochs, seed=args.seed)
+    result = fit(model, *arrays["train"], *arrays["validation"], epochs=args.epochs, seed=args.seed, keep_initial=args.resume_weights is not None)
     if args.device == "cuda":
         torch.cuda.synchronize()
     seconds = time.perf_counter() - started
-    metrics = {"best_epoch": result["best_epoch"], "epochs_completed": len(result["history"]), "training_seconds": seconds}
+    metrics = {"best_epoch": result["best_epoch"], "epochs_completed": len(result["history"]), "training_seconds": seconds,
+               "initial_validation_mse": result['initial_validation_mse']}
     with torch.no_grad():
         constant = arrays["train"][1].mean()
         for name, (features, labels) in arrays.items():
@@ -71,8 +77,10 @@ def main():
         "activations": ["clipped_relu", "clipped_relu", "tanh"] if args.nnue_width else ["relu", "relu", "tanh"],
         "parameters": sum(parameter.numel() for parameter in model.parameters()),
         "feature_order": "two perspectives, side-to-move first, shared transform: own cells (81), opponent cells (81), own then opponent categorical reserves (42), categorical column heights (90)" if args.nnue_width else "own cells row-major (81), opponent cells (81), own reserves /2 (7), opponent reserves /2 (7)",
-        "shape_order": metadata[0]["shapes"], "perspective": "side to move", "seed": args.seed,
-        "target": "sign(score) if proven; otherwise 0.9*tanh(score/4000)+0.1*observed_game_outcome",
+        "shape_order": metadata[0]["shapes"], "perspective": "side to move", "seed": args.seed, "split_seed": args.split_seed,
+        "parent_weights_sha256": hashlib.sha256(args.resume_weights.read_bytes()).hexdigest() if args.resume_weights else None,
+        "target": "sign(score) if proven; otherwise tanh(score/4000) for hypothetical tree states, or 0.9*tanh(score/4000)+0.1*observed_game_outcome for played states",
+        "prefer_stronger_training_labels": args.prefer_stronger_labels,
         "split": "opening groups; horizontal-mirror and color-swap equivalent positions deduplicated across all partitions",
         "raw_samples": len(rows), "unique_samples": sum(len(items) for items in splits.values()),
         "generated_games": sum(item["completedGames"] for item in metadata),

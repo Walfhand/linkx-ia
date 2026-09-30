@@ -20,6 +20,30 @@ def sample(game="game-1", opening="opening-1", index=80):
 
 
 class DataTests(unittest.TestCase):
+    def test_hypothetical_search_positions_have_no_observed_game_outcome(self):
+        row = sample()
+        row.update(source="tree", outcome=None)
+        validate_sample(row)
+        import math
+        self.assertAlmostEqual(target(row), math.tanh(row['score'] / 4000))
+        row.update(exact=True, score=-1000000)
+        self.assertEqual(target(row), -1)
+        row['source'] = 'root'
+        with self.assertRaises(ValueError):
+            validate_sample(row)
+
+    def test_stronger_duplicate_labels_are_preferred_without_changing_partition_keys(self):
+        rows = [sample(f"game-{i}", f"opening-{i // 3}", index=(i * 7) % 81) for i in range(30)]
+        old = split_samples(rows)
+        training = old['train'][0]
+        corrected = copy.deepcopy(training)
+        corrected.update(game_id='zz-new', depth=training['depth'] + 2, score=-2000, nodes=5000)
+        combined = split_samples(rows + [corrected], prefer_stronger=True)
+        actual = next(row for row in combined['train'] if row['position_key'] == training['position_key'])
+        self.assertEqual(actual['score'], -2000)
+        for name in old:
+            self.assertEqual({row['position_key'] for row in old[name]}, {row['position_key'] for row in combined[name]})
+
     def test_loading_rejects_reserved_validation_positions(self):
         row = sample()
         with tempfile.TemporaryDirectory() as directory:
