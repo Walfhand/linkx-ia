@@ -2,12 +2,12 @@
 // Usage: node scripts/validate-teacher.mjs REFERENCE_CHECKOUT EXACT_ENDGAMES_JSON [budgetMs] [model.onnx|model.nnue]
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { cpus } from 'node:os';
 import { createHash } from 'node:crypto';
-import { createInterface } from 'node:readline';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { analysisWorker } from './analysis-worker.mjs';
 
 const [reference, exactPath, budgetText = '100', modelPath] = process.argv.slice(2);
 if (!reference || !exactPath) throw new Error('Provide reference checkout and exact endgames.');
@@ -24,32 +24,8 @@ const token = move => serializeMove({ shapeId: move.shapeId, column: move.column
 
 const assembly = 'tools/LinkxAi.Analysis/bin/Release/net10.0/LinkxAi.Analysis.dll';
 assert.ok(fs.existsSync(assembly), 'Build tools/LinkxAi.Analysis in Release first.');
-function worker(model) {
-    const child = spawn('dotnet', [assembly, ...(model ? [model] : [])], { stdio: ['pipe', 'pipe', 'inherit'] });
-    const pending = [];
-    let stopped = false;
-    createInterface({ input: child.stdout }).on('line', line => {
-        const request = pending.shift();
-        if (!request) throw new Error('Unexpected analysis response.');
-        try { request.resolve(JSON.parse(line)); } catch (error) { request.reject(error); }
-    });
-    child.on('exit', code => {
-        stopped = true;
-        for (const request of pending.splice(0)) request.reject(new Error(`Analysis worker exited: ${code}`));
-    });
-    return {
-        analyze(request) {
-            if (stopped) return Promise.reject(new Error('Analysis worker has stopped.'));
-            return new Promise((resolve, reject) => {
-                pending.push({ resolve, reject });
-                child.stdin.write(JSON.stringify(request) + '\n');
-            });
-        },
-        stop() { child.stdin.end(); child.kill(); },
-    };
-}
-const candidate = worker(modelPath);
-const classical = modelPath ? worker() : null;
+const candidate = analysisWorker(modelPath, assembly);
+const classical = modelPath ? analysisWorker(null, assembly) : null;
 
 try {
     let correct = 0;

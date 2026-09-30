@@ -13,6 +13,7 @@ jobs:
       - run: dotnet build LinkxAi.slnx -c Release
       - run: dotnet test LinkxAi.slnx -c Release --no-build
       - run: node training/check-dotnet.mjs
+      - run: node --test scripts/diagnose-nnue.test.mjs
       - name: Check native NNUE against PyTorch reference predictions
         run: |
           for width in 256 512 1024; do
@@ -41,3 +42,4 @@ jobs:
           git -C "$RUNNER_TEMP/linkx-reference" fetch --depth 1 origin f8f07bdc6c042d11105ca0da24f00d32e1238e01
           git -C "$RUNNER_TEMP/linkx-reference" checkout --detach FETCH_HEAD
           LINKX_REFERENCE="$RUNNER_TEMP/linkx-reference" node --test training/generate.test.mjs
+          LINKX_REFERENCE="$RUNNER_TEMP/linkx-reference" node --test scripts/diagnose-nnue.test.mjs

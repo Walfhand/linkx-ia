@@ -1,0 +1,386 @@
+{
+  "referenceCommit": "f8f07bdc6c042d11105ca0da24f00d32e1238e01",
+  "environment": {
+    "cpu": "AMD Ryzen 7 5700X 8-Core Processor",
+    "node": "v22.23.1",
+    "dotnet": "10.0.102"
+  },
+  "exactCases": 260,
+  "exactCorrect": 260,
+  "referenceCorrectMoves": 260,
+  "referenceProvenResults": 260,
+  "model": null,
+  "baseline": {
+    "budgetMs": 100,
+    "games": [
+      {
+        "opening": "",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Tr24",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Tr24",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Lr38",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Lr38",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Lsr15",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Lsr15",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Lr35",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Lr35",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Lr36",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Lr36",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Tr23",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Tr23",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Tr21",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Tr21",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Lr23",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Lr23",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Lr28",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Lr28",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Ir15",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Ir15",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "4Tr22",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Tr22",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Ir12",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Ir12",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Ir17",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Ir17",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Ir14",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Ir14",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "2r15",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "2r15",
+        "color": "white",
+        "result": 1
+      },
+      {
+        "opening": "3Lr24",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Lr24",
+        "color": "white",
+        "result": 1
+      }
+    ],
+    "wins": 34,
+    "draws": 0,
+    "losses": 0,
+    "score": 1,
+    "maximumMs": 100.4337,
+    "searches": 105,
+    "medianMs": 100.0168,
+    "p95Ms": 100.0569,
+    "meanDepth": 2.2666666666666666,
+    "meanNodes": 4094.5809523809526,
+    "nodesPerSecond": 76099.7793531033
+  },
+  "referenceDuel": {
+    "budgetMs": 100,
+    "games": [
+      {
+        "opening": "",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Tr24",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Tr24",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Lr38",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Lr38",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Lsr15",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Lsr15",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Lr35",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Lr35",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Lr36",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Lr36",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Tr23",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Tr23",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Tr21",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "4Tr21",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Lr23",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Lr23",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Lr28",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Lr28",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Ir15",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Ir15",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "4Tr22",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "4Tr22",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Ir12",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Ir12",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Ir17",
+        "color": "blue",
+        "result": 1
+      },
+      {
+        "opening": "3Ir17",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Ir14",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Ir14",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "2r15",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "2r15",
+        "color": "white",
+        "result": 0
+      },
+      {
+        "opening": "3Lr24",
+        "color": "blue",
+        "result": 0
+      },
+      {
+        "opening": "3Lr24",
+        "color": "white",
+        "result": 0
+      }
+    ],
+    "wins": 3,
+    "draws": 0,
+    "losses": 31,
+    "score": 0.08823529411764706,
+    "maximumMs": 102.1188,
+    "searches": 210,
+    "medianMs": 100.0212,
+    "p95Ms": 100.0405,
+    "meanDepth": 3.4380952380952383,
+    "meanNodes": 6833.447619047619,
+    "nodesPerSecond": 94749.54913999519
+  },
+  "note": "Diagnostic paired games, not an Elo estimate or proof of opening/middlegame strength."
+}

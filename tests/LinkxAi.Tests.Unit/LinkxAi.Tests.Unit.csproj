@@ -17,5 +17,6 @@
   <ItemGroup>
     <EmbeddedResource Include="ReferenceFixtures/rules.json" />
     <EmbeddedResource Include="ReferenceFixtures/endgames.json" />
+    <None Include="../../models/nnue-v1/h512/model.nnue" Link="ReferenceFixtures/nnue-h512.nnue" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

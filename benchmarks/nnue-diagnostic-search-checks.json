@@ -1,0 +1,834 @@
+{
+  "assemblySha256": "18f59803babb421cbb6502c8a2bdfa830d11aa35e1ea1779bd07c778b19555e7",
+  "fixedDepth": [
+    {
+      "case": 1,
+      "record": "25 2r11 3Lr32 4Lsr11 4Lsr15 4Ss3 3Ir16 2r16 4Tr13 3Ir12 12 4S3 4Tr33 4Lr38",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "17",
+        "score": 7818,
+        "depth": 3,
+        "nodes": 777,
+        "exact": false,
+        "elapsedMs": 7.7312,
+        "teacherAfter": {
+          "score": -999993,
+          "depth": 8,
+          "exact": true,
+          "nodes": 14348,
+          "elapsedMs": 17.333980999988853,
+          "player": "white",
+          "terminal": false,
+          "move": "18",
+          "pv": [
+            "18",
+            "2r17",
+            "18",
+            "4Lsr37",
+            "3Lr37",
+            "3Lr17",
+            "3Ir11",
+            "3Ir15"
+          ]
+        },
+        "staticValueForMover": 0.8935753,
+        "beforeValue": 1,
+        "afterValue": 1,
+        "estimatedDrop": 0,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "17",
+        "score": 7818,
+        "depth": 3,
+        "nodes": 583,
+        "exact": false,
+        "elapsedMs": 77.625
+      },
+      "nodeReduction": 0.2496782496782497
+    },
+    {
+      "case": 1,
+      "record": "25 2r11 3Lr32 4Lsr11 4Lsr15 4Ss3 3Ir16 2r16 4Tr13 3Ir12 12 4S3 4Tr33 4Lr38",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "15",
+        "score": 8166,
+        "depth": 4,
+        "nodes": 2484,
+        "exact": false,
+        "elapsedMs": 24.8828,
+        "teacherAfter": {
+          "score": 999996,
+          "depth": 5,
+          "exact": true,
+          "nodes": 2828,
+          "elapsedMs": 3.719613000008394,
+          "player": "white",
+          "terminal": false,
+          "move": "18",
+          "pv": [
+            "18",
+            "2r19",
+            "3Ir18",
+            "3Ir19",
+            "4Tr18"
+          ]
+        },
+        "staticValueForMover": 0.822043,
+        "beforeValue": 1,
+        "afterValue": -1,
+        "estimatedDrop": 2,
+        "provenBlunder": true
+      },
+      "after": {
+        "move": "15",
+        "score": 8166,
+        "depth": 4,
+        "nodes": 1518,
+        "exact": false,
+        "elapsedMs": 162.076
+      },
+      "nodeReduction": 0.38888888888888884
+    },
+    {
+      "case": 2,
+      "record": "22 4L1 4Lsr26 4Tr21 4Tr12 4Ss6 3Ir13 3Ir14 4Lr17",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "15",
+        "score": 6324,
+        "depth": 3,
+        "nodes": 4152,
+        "exact": false,
+        "elapsedMs": 41.122,
+        "teacherAfter": {
+          "score": 999998,
+          "depth": 3,
+          "exact": true,
+          "nodes": 2550,
+          "elapsedMs": 3.6406629999983124,
+          "player": "blue",
+          "terminal": false,
+          "move": "14",
+          "pv": [
+            "14",
+            "2r15",
+            "3L5"
+          ]
+        },
+        "staticValueForMover": 0.15582459,
+        "beforeValue": 1,
+        "afterValue": -1,
+        "estimatedDrop": 2,
+        "provenBlunder": true
+      },
+      "after": {
+        "move": "15",
+        "score": 6324,
+        "depth": 3,
+        "nodes": 2779,
+        "exact": false,
+        "elapsedMs": 28.1305
+      },
+      "nodeReduction": 0.33068400770712914
+    },
+    {
+      "case": 2,
+      "record": "22 4L1 4Lsr26 4Tr21 4Tr12 4Ss6 3Ir13 3Ir14 4Lr17",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "4Lsr31",
+        "score": 4090,
+        "depth": 4,
+        "nodes": 85104,
+        "exact": false,
+        "elapsedMs": 806.0678,
+        "teacherAfter": {
+          "score": -2117,
+          "depth": 7,
+          "exact": false,
+          "nodes": 1014423,
+          "elapsedMs": 2675.187561999992,
+          "player": "blue",
+          "terminal": false,
+          "move": "3Lr21",
+          "pv": [
+            "3Lr21",
+            "4Tr26",
+            "4S6",
+            "2r14",
+            "14",
+            "3Ir15",
+            "2r15"
+          ]
+        },
+        "staticValueForMover": 0.07917961,
+        "beforeValue": 1,
+        "afterValue": 0.48480757803612573,
+        "estimatedDrop": 0.5151924219638743,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lsr31",
+        "score": 4090,
+        "depth": 4,
+        "nodes": 11758,
+        "exact": false,
+        "elapsedMs": 129.5969
+      },
+      "nodeReduction": 0.8618396315096822
+    },
+    {
+      "case": 3,
+      "record": "4Lr25 3Lr33 4Lr34",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "4S6",
+        "score": -4221,
+        "depth": 3,
+        "nodes": 16870,
+        "exact": false,
+        "elapsedMs": 164.3715,
+        "teacherAfter": {
+          "score": 2474,
+          "depth": 6,
+          "exact": false,
+          "nodes": 371999,
+          "elapsedMs": 2875.4731759999995,
+          "player": "blue",
+          "terminal": false,
+          "move": "2r14",
+          "pv": [
+            "2r14",
+            "14",
+            "3Lr28",
+            "2r14",
+            "2r13",
+            "4Lsr11"
+          ]
+        },
+        "staticValueForMover": -0.3677366,
+        "beforeValue": 0.08007817095048186,
+        "afterValue": -0.5500827783778547,
+        "estimatedDrop": 0.6301609493283366,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4S6",
+        "score": -4221,
+        "depth": 3,
+        "nodes": 5852,
+        "exact": false,
+        "elapsedMs": 60.1088
+      },
+      "nodeReduction": 0.6531120331950208
+    },
+    {
+      "case": 3,
+      "record": "4Lr25 3Lr33 4Lr34",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "4Tr36",
+        "score": -6435,
+        "depth": 4,
+        "nodes": 199019,
+        "exact": false,
+        "elapsedMs": 1930.1304,
+        "teacherAfter": {
+          "score": 2850,
+          "depth": 7,
+          "exact": false,
+          "nodes": 1892032,
+          "elapsedMs": 2779.9282819999935,
+          "player": "blue",
+          "terminal": false,
+          "move": "2r14",
+          "pv": [
+            "2r14",
+            "14",
+            "4Tr16",
+            "3L6",
+            "3Lr28",
+            "4Tr38",
+            "3Ir15"
+          ]
+        },
+        "staticValueForMover": -0.64523405,
+        "beforeValue": 0.08007817095048186,
+        "afterValue": -0.6122421243522803,
+        "estimatedDrop": 0.6923202953027622,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Tr36",
+        "score": -6435,
+        "depth": 4,
+        "nodes": 29254,
+        "exact": false,
+        "elapsedMs": 331.0896
+      },
+      "nodeReduction": 0.8530090091900773
+    },
+    {
+      "case": 4,
+      "record": "3Lr26 21 3Ir15 4Tr36 4Ls1",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "4Tr35",
+        "score": 5855,
+        "depth": 3,
+        "nodes": 12372,
+        "exact": false,
+        "elapsedMs": 119.9621,
+        "teacherAfter": {
+          "score": 999998,
+          "depth": 3,
+          "exact": true,
+          "nodes": 4937,
+          "elapsedMs": 7.029168000008212,
+          "player": "blue",
+          "terminal": false,
+          "move": "28",
+          "pv": [
+            "28",
+            "4Lr13",
+            "4L2"
+          ]
+        },
+        "staticValueForMover": 0.4916303,
+        "beforeValue": -0.24162580118764995,
+        "afterValue": -1,
+        "estimatedDrop": 0.75837419881235,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Tr35",
+        "score": 5855,
+        "depth": 3,
+        "nodes": 4715,
+        "exact": false,
+        "elapsedMs": 50.5646
+      },
+      "nodeReduction": 0.6188975105075978
+    },
+    {
+      "case": 4,
+      "record": "3Lr26 21 3Ir15 4Tr36 4Ls1",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "4Lr38",
+        "score": -4555,
+        "depth": 4,
+        "nodes": 548657,
+        "exact": false,
+        "elapsedMs": 5291.5607,
+        "teacherAfter": {
+          "score": 986,
+          "depth": 6,
+          "exact": false,
+          "nodes": 630780,
+          "elapsedMs": 2727.9355700000015,
+          "player": "blue",
+          "terminal": false,
+          "move": "4S5",
+          "pv": [
+            "4S5",
+            "4Tr35",
+            "4Lr37",
+            "4Ss6",
+            "2r14",
+            "2r18"
+          ]
+        },
+        "staticValueForMover": 0.24279465,
+        "beforeValue": -0.24162580118764995,
+        "afterValue": -0.24162580118764995,
+        "estimatedDrop": 0,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lr38",
+        "score": -4555,
+        "depth": 4,
+        "nodes": 53951,
+        "exact": false,
+        "elapsedMs": 648.7162
+      },
+      "nodeReduction": 0.9016671618151231
+    },
+    {
+      "case": 5,
+      "record": "2r17 3I4 18 4S6 4Tr36 4Lr21 3Ir18 4Ss6 2r18 4Tr17 4Ssr11 3Ir15",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "3Ir15",
+        "score": 11,
+        "depth": 3,
+        "nodes": 1090,
+        "exact": false,
+        "elapsedMs": 11.5372,
+        "teacherAfter": {
+          "score": 999993,
+          "depth": 8,
+          "exact": true,
+          "nodes": 152878,
+          "elapsedMs": 248.7707020000089,
+          "player": "white",
+          "terminal": false,
+          "move": "15",
+          "pv": [
+            "15",
+            "3Lr22",
+            "2r13",
+            "4Lsr31",
+            "4Lsr32",
+            "14",
+            "19"
+          ]
+        },
+        "staticValueForMover": -0.676996,
+        "beforeValue": -0.07610256877171835,
+        "afterValue": -1,
+        "estimatedDrop": 0.9238974312282816,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "3Ir15",
+        "score": 11,
+        "depth": 3,
+        "nodes": 379,
+        "exact": false,
+        "elapsedMs": 4.6955
+      },
+      "nodeReduction": 0.6522935779816514
+    },
+    {
+      "case": 5,
+      "record": "2r17 3I4 18 4S6 4Tr36 4Lr21 3Ir18 4Ss6 2r18 4Tr17 4Ssr11 3Ir15",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "3Ir15",
+        "score": -5120,
+        "depth": 4,
+        "nodes": 1765,
+        "exact": false,
+        "elapsedMs": 18.4773,
+        "teacherAfter": {
+          "score": 999993,
+          "depth": 8,
+          "exact": true,
+          "nodes": 152878,
+          "elapsedMs": 248.7707020000089,
+          "player": "white",
+          "terminal": false,
+          "move": "15",
+          "pv": [
+            "15",
+            "3Lr22",
+            "2r13",
+            "4Lsr31",
+            "4Lsr32",
+            "14",
+            "19"
+          ]
+        },
+        "staticValueForMover": -0.676996,
+        "beforeValue": -0.07610256877171835,
+        "afterValue": -1,
+        "estimatedDrop": 0.9238974312282816,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "3Ir15",
+        "score": -5120,
+        "depth": 4,
+        "nodes": 802,
+        "exact": false,
+        "elapsedMs": 9.384
+      },
+      "nodeReduction": 0.5456090651558074
+    },
+    {
+      "case": 6,
+      "record": "2r11 4Lsr16 4Tr22 4T1",
+      "depth": 3,
+      "before": {
+        "name": "nnue-depth3",
+        "move": "4Lr32",
+        "score": -1482,
+        "depth": 3,
+        "nodes": 39043,
+        "exact": false,
+        "elapsedMs": 372.5183,
+        "teacherAfter": {
+          "score": 999996,
+          "depth": 5,
+          "exact": true,
+          "nodes": 49485,
+          "elapsedMs": 73.26346499999636,
+          "player": "white",
+          "terminal": false,
+          "move": "4Ss4",
+          "pv": [
+            "4Ss4",
+            "3Ir18",
+            "4Lsr17",
+            "4Tr14",
+            "3Ir18"
+          ]
+        },
+        "staticValueForMover": 0.14514682,
+        "beforeValue": 0.20935816942801871,
+        "afterValue": -1,
+        "estimatedDrop": 1.2093581694280187,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lr32",
+        "score": -1482,
+        "depth": 3,
+        "nodes": 6522,
+        "exact": false,
+        "elapsedMs": 70.4791
+      },
+      "nodeReduction": 0.832953410342443
+    },
+    {
+      "case": 6,
+      "record": "2r11 4Lsr16 4Tr22 4T1",
+      "depth": 4,
+      "before": {
+        "name": "nnue-depth4",
+        "move": "4Lr13",
+        "score": -5948,
+        "depth": 4,
+        "nodes": 587428,
+        "exact": false,
+        "elapsedMs": 5609.4691,
+        "teacherAfter": {
+          "score": -96,
+          "depth": 6,
+          "exact": false,
+          "nodes": 346964,
+          "elapsedMs": 2946.4840910000203,
+          "player": "white",
+          "terminal": false,
+          "move": "4L2",
+          "pv": [
+            "4L2",
+            "4Lsr36",
+            "3Lr26",
+            "4Tr22",
+            "28",
+            "3Lr38"
+          ]
+        },
+        "staticValueForMover": -0.22890368,
+        "beforeValue": 0.20935816942801871,
+        "afterValue": 0.023995393061435735,
+        "estimatedDrop": 0.185362776366583,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lr13",
+        "score": -5948,
+        "depth": 4,
+        "nodes": 33676,
+        "exact": false,
+        "elapsedMs": 413.4216
+      },
+      "nodeReduction": 0.9426721232219097
+    }
+  ],
+  "exact": [
+    {
+      "engine": "nnue",
+      "cases": 260,
+      "correct": 260
+    },
+    {
+      "engine": "classical",
+      "cases": 260,
+      "correct": 260
+    }
+  ],
+  "tactical": [
+    {
+      "case": 1,
+      "record": "25 2r11 3Lr32 4Lsr11 4Lsr15 4Ss3 3Ir16 2r16 4Tr13 3Ir12 12 4S3 4Tr33 4Lr38",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "4Lr18",
+        "score": 8307,
+        "depth": 7,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1052.2397,
+        "teacherAfter": {
+          "score": -999992,
+          "depth": 9,
+          "exact": true,
+          "nodes": 60714,
+          "elapsedMs": 66.38678699999582,
+          "player": "white",
+          "terminal": false,
+          "move": "3Lr38",
+          "pv": [
+            "3Lr38",
+            "2r17",
+            "3Lr18",
+            "3Lr28",
+            "14",
+            "15",
+            "3Ir11",
+            "3Ir17",
+            "11"
+          ]
+        },
+        "staticValueForMover": 0.8669678,
+        "beforeValue": 1,
+        "afterValue": 1,
+        "estimatedDrop": 0,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "17",
+        "score": 1000000,
+        "depth": 9,
+        "nodes": 52099,
+        "exact": true,
+        "elapsedMs": 1364.2032
+      }
+    },
+    {
+      "case": 2,
+      "record": "22 4L1 4Lsr26 4Tr21 4Tr12 4Ss6 3Ir13 3Ir14 4Lr17",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "4Lsr31",
+        "score": 4090,
+        "depth": 4,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 937.8735,
+        "teacherAfter": {
+          "score": -2117,
+          "depth": 7,
+          "exact": false,
+          "nodes": 1014423,
+          "elapsedMs": 2675.187561999992,
+          "player": "blue",
+          "terminal": false,
+          "move": "3Lr21",
+          "pv": [
+            "3Lr21",
+            "4Tr26",
+            "4S6",
+            "2r14",
+            "14",
+            "3Ir15",
+            "2r15"
+          ]
+        },
+        "staticValueForMover": 0.07917961,
+        "beforeValue": 1,
+        "afterValue": 0.48480757803612573,
+        "estimatedDrop": 0.5151924219638743,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lsr31",
+        "score": 4473,
+        "depth": 6,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1061.6231
+      }
+    },
+    {
+      "case": 3,
+      "record": "4Lr25 3Lr33 4Lr34",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "4S6",
+        "score": -4221,
+        "depth": 3,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 963.4739,
+        "teacherAfter": {
+          "score": 2474,
+          "depth": 6,
+          "exact": false,
+          "nodes": 371999,
+          "elapsedMs": 2875.4731759999995,
+          "player": "blue",
+          "terminal": false,
+          "move": "2r14",
+          "pv": [
+            "2r14",
+            "14",
+            "3Lr28",
+            "2r14",
+            "2r13",
+            "4Lsr11"
+          ]
+        },
+        "staticValueForMover": -0.3677366,
+        "beforeValue": 0.08007817095048186,
+        "afterValue": -0.5500827783778547,
+        "estimatedDrop": 0.6301609493283366,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Tr36",
+        "score": -6435,
+        "depth": 4,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1078.2491
+      }
+    },
+    {
+      "case": 4,
+      "record": "3Lr26 21 3Ir15 4Tr36 4Ls1",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "4Tr35",
+        "score": 5855,
+        "depth": 3,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 986.8516,
+        "teacherAfter": {
+          "score": 999998,
+          "depth": 3,
+          "exact": true,
+          "nodes": 4937,
+          "elapsedMs": 7.029168000008212,
+          "player": "blue",
+          "terminal": false,
+          "move": "28",
+          "pv": [
+            "28",
+            "4Lr13",
+            "4L2"
+          ]
+        },
+        "staticValueForMover": 0.4916303,
+        "beforeValue": -0.24162580118764995,
+        "afterValue": -1,
+        "estimatedDrop": 0.75837419881235,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lsr12",
+        "score": -731,
+        "depth": 5,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1289.1885
+      }
+    },
+    {
+      "case": 5,
+      "record": "2r17 3I4 18 4S6 4Tr36 4Lr21 3Ir18 4Ss6 2r18 4Tr17 4Ssr11 3Ir15",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "3Ir15",
+        "score": -4422,
+        "depth": 7,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1287.4763,
+        "teacherAfter": {
+          "score": 999993,
+          "depth": 8,
+          "exact": true,
+          "nodes": 152878,
+          "elapsedMs": 248.7707020000089,
+          "player": "white",
+          "terminal": false,
+          "move": "15",
+          "pv": [
+            "15",
+            "3Lr22",
+            "2r13",
+            "4Lsr31",
+            "4Lsr32",
+            "14",
+            "19"
+          ]
+        },
+        "staticValueForMover": -0.676996,
+        "beforeValue": -0.07610256877171835,
+        "afterValue": -1,
+        "estimatedDrop": 0.9238974312282816,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "3Ir15",
+        "score": -5948,
+        "depth": 8,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1390.111
+      }
+    },
+    {
+      "case": 6,
+      "record": "2r11 4Lsr16 4Tr22 4T1",
+      "before": {
+        "name": "nnue-api-cap",
+        "move": "4Lr32",
+        "score": -1482,
+        "depth": 3,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 961.0619,
+        "teacherAfter": {
+          "score": 999996,
+          "depth": 5,
+          "exact": true,
+          "nodes": 49485,
+          "elapsedMs": 73.26346499999636,
+          "player": "white",
+          "terminal": false,
+          "move": "4Ss4",
+          "pv": [
+            "4Ss4",
+            "3Ir18",
+            "4Lsr17",
+            "4Tr14",
+            "3Ir18"
+          ]
+        },
+        "staticValueForMover": 0.14514682,
+        "beforeValue": 0.20935816942801871,
+        "afterValue": -1,
+        "estimatedDrop": 1.2093581694280187,
+        "provenBlunder": false
+      },
+      "after": {
+        "move": "4Lr13",
+        "score": -2383,
+        "depth": 5,
+        "nodes": 100000,
+        "exact": false,
+        "elapsedMs": 1137.5537
+      }
+    }
+  ]
+}

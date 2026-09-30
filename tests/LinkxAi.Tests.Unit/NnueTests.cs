@@ -9,6 +9,21 @@ namespace LinkxAi.Tests.Unit;
 public sealed class NnueTests
 {
     [Fact]
+    public void Search_ShouldProveTheWinningContinuation_WithinTheApiNodeBudget()
+    {
+        // A recorded loss: 15 allows a forced defeat; the independent teacher proves a win beginning with 17.
+        const string record = "25 2r11 3Lr32 4Lsr11 4Lsr15 4Ss3 3Ir16 2r16 4Tr13 3Ir12 12 4S3 4Tr33 4Lr38";
+        var model = NnueModel.Load(Path.Combine(AppContext.BaseDirectory, "ReferenceFixtures/nnue-h512.nnue"));
+        var position = GamePosition.Replay(record);
+        var accumulator = model.CreateAccumulator(position);
+        var decision = MoveSearch.Find(position, maxNodes: 100_000,
+            evaluate: accumulator.Score, push: accumulator.Push, pop: accumulator.Pop);
+        Assert.True(decision.Exact);
+        Assert.Equal(1_000_000, decision.Score);
+        Assert.NotEqual("15", decision.Move.ToString());
+    }
+
+    [Fact]
     public void IncrementalEvaluation_ShouldEqualRecomputation_AcrossMovesPassesAndUndo()
     {
         using var data = ModelBytes();

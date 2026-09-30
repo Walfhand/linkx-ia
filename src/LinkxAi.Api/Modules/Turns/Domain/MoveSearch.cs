@@ -39,9 +39,11 @@ public static class MoveSearch
         Func<GamePosition, PlayerColor, int> evaluate, Action<GamePosition>? push, Action? pop)
     {
         private readonly Dictionary<string, Entry> table = new(StringComparer.Ordinal);
+        private readonly Move?[,,] killers = new Move?[2, 29, 2];
+        private readonly int[,] history = new int[2, 7 * 8 * 9];
         public int Nodes { get; private set; }
 
-        public int Visit(GamePosition position, int depth, int alpha, int beta, out Move? best)
+        public int Visit(GamePosition position, int depth, int alpha, int beta, out Move? best, int ply = 0)
         {
             if (Nodes >= maxNodes || shouldStop?.Invoke() == true) throw new SearchInterruptedException();
             Nodes++;
@@ -68,12 +70,15 @@ public static class MoveSearch
             var score = maximizing ? -Win - 1 : Win + 1;
             var preferred = best;
             best = null;
-            foreach (var move in position.GetLegalMoves().OrderByDescending(move => preferred == move))
+            var player = (int)position.ActivePlayer;
+            foreach (var move in position.GetLegalMoves().OrderByDescending(move =>
+                move == preferred ? 2_000_000 : move == killers[player, ply, 0] ? 1_000_002
+                : move == killers[player, ply, 1] ? 1_000_001 : history[player, MoveIndex(move)]))
             {
                 var child = position.Play(move);
                 push?.Invoke(child);
                 int value;
-                try { value = Visit(child, depth - 1, alpha, beta, out _); }
+                try { value = Visit(child, depth - 1, alpha, beta, out _, ply + 1); }
                 finally { pop?.Invoke(); }
                 if (best is null || (maximizing ? value > score : value < score))
                 {
@@ -82,13 +87,26 @@ public static class MoveSearch
                 }
                 if (maximizing) alpha = Math.Max(alpha, score);
                 else beta = Math.Min(beta, score);
-                if (alpha >= beta || (maximizing ? score == Win : score == -Win)) break;
+                if (alpha >= beta || (maximizing ? score == Win : score == -Win))
+                {
+                    // Reuse successful refutations. Separate colors because forced passes break alternation.
+                    if (killers[player, ply, 0] != move)
+                    {
+                        killers[player, ply, 1] = killers[player, ply, 0];
+                        killers[player, ply, 0] = move;
+                    }
+                    var index = MoveIndex(move);
+                    history[player, index] = Math.Min(1_000_000, history[player, index] + depth * depth);
+                    break;
+                }
             }
             var bound = score <= originalAlpha ? Bound.Upper : score >= originalBeta ? Bound.Lower : Bound.Exact;
             // ponytail: cap per-search memory; use a fixed-size replacement table if profiling warrants it.
             if (table.Count < 100_000 || table.ContainsKey(key)) table[key] = new Entry(depth, score, bound, best);
             return score;
         }
+
+        private static int MoveIndex(Move move) => (((int)move.Shape * 2 + (move.Flipped ? 1 : 0)) * 4 + move.Rotation) * 9 + move.Column;
 
         private static string Key(GamePosition position)
         {

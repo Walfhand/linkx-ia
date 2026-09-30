@@ -39,6 +39,8 @@ node scripts/generate-reference-fixtures.mjs /chemin/vers/linkx 100 > /tmp/linkx
 
 La recherche actuelle évalue les chemins de connexion, les réserves et les plus grandes zones. Elle partage les règles testées de `GamePosition`, possède une table de transposition propre à chaque appel et distingue une estimation d'un résultat de fin de partie prouvé. Elle est déterministe avec un budget de nœuds ; avec un budget de temps, la profondeur atteinte dépend de la machine.
 
+Le [diagnostic du NNUE](docs/nnue-diagnostic.md) compare les budgets de 100 ms, 1 seconde et 4 secondes, puis mesure une amélioration de l'ordre des coups par réponses prioritaires et historique. La [revue de littérature](docs/nnue-literature.md) propose la prochaine expérience d'apprentissage à partir des positions explorées par la recherche.
+
 Le professeur utilisé pour le premier entraînement est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
 
 Le [pilote MLP](models/pilot-v1) et les [premiers NNUE incrémentaux](models/nnue-v1) sont disponibles avec leurs poids et résultats. L'[entraînement local](training/README.md) utilise la Radeon. Les NNUE sont exportés en entiers et exécutés nativement en C# sur CPU, avec mises à jour après les coups et restauration après annulation. L'API actuelle conserve sa recherche classique jusqu'à une validation suffisante du réseau en parties indépendantes.

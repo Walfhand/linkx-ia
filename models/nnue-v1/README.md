@@ -2,6 +2,8 @@
 
 Entraînement supervisé local sur **Radeon RX 7900 XTX**, puis inférence native C# sur **Ryzen 7 5700X**, sans GPU. Les trois réseaux restent expérimentaux ; l'API publique conserve son évaluation classique.
 
+Les mesures ci-dessous correspondent à la recherche du commit `3367dd8`. Le [diagnostic suivant](../../docs/nnue-diagnostic.md) utilise d'autres ouvertures, améliore l'ordre de recherche et conserve les mêmes poids.
+
 **H=512, soit 183 873 paramètres, est le candidat retenu pour les prochains essais.** Il obtient le meilleur résultat de ce petit banc contre le moteur classique. Il reste nettement derrière le professeur Marmelab. Ces matchs ne démontrent pas encore un progrès statistiquement établi sur des ouvertures indépendantes.
 
 ## Corpus et entraînement
