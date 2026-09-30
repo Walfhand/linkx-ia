@@ -15,6 +15,7 @@ jobs:
       - run: node training/check-dotnet.mjs
       - run: node --test scripts/diagnose-nnue.test.mjs
       - run: node --test training/evaluate-loop.test.mjs
+      - run: node --test training/sampling.test.mjs
       - name: Check native NNUE against PyTorch reference predictions
         run: |
           for width in 256 512 1024; do

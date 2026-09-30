@@ -5,11 +5,18 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
-import { analysisWorker } from '../scripts/analysis-worker.mjs';
+import { analysisWorker, analysisAssembly } from '../scripts/analysis-worker.mjs';
 import { positionKey } from '../scripts/diagnose-nnue.mjs';
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const modelHash = folder => sha(fs.readFileSync(join(folder, 'model.nnue')));
+
+export function evaluationProtocol(values, candidates) {
+    const pairs = Number(values.pairs ?? 64), confirmation = values.confirmation ?? false;
+    assert.ok(Number.isInteger(pairs) && pairs >= 64, 'At least 64 complete opening pairs are required.');
+    assert.ok(!confirmation || candidates.length === 1, 'Confirmation must fix exactly one candidate.');
+    return { pairs, confirmation };
+}
 
 export function readMatchReport(text, candidateHash, opponentHash, expectedContext = {}) {
     const rows = text.trim().split('\n').map(JSON.parse);
@@ -29,10 +36,14 @@ async function main() {
     const { values } = parseArgs({ options: {
         reference: { type: 'string' }, parent: { type: 'string' }, candidates: { type: 'string' },
         output: { type: 'string' }, budget: { type: 'string', default: '100' }, seed: { type: 'string', default: '73201' },
+        pairs: { type: 'string', default: '64' }, confirmation: { type: 'boolean', default: false },
+        assembly: { type: 'string', default: analysisAssembly },
     } });
     assert.ok(values.reference && values.parent && values.candidates && values.output);
     const candidates = values.candidates.split(',');
     assert.ok(candidates.length > 0);
+    const protocol = evaluationProtocol(values, candidates);
+    fs.mkdirSync(values.output, { recursive: true });
     const path = name => join(values.output, name);
     const parentHash = modelHash(values.parent);
     function duel(candidate, opponent, openings, output) {
@@ -40,18 +51,19 @@ async function main() {
             const log = fs.openSync(output + '.log', 'w');
             try {
                 execFileSync(process.execPath, ['scripts/diagnose-nnue.mjs', '--mode', 'matches', '--reference', values.reference,
+                    '--assembly', values.assembly,
                     '--model', join(candidate, 'model.nnue'), '--openings', openings, '--budget', values.budget, '--output', output,
                     ...(opponent ? ['--opponent-model', join(opponent, 'model.nnue')] : [])], { stdio: ['ignore', log, log] });
             } finally { fs.closeSync(log); }
         }
         const report = readMatchReport(fs.readFileSync(output, 'utf8'), modelHash(candidate), opponent ? modelHash(opponent) : null,
-            { budgetMs: Number(values.budget), openingsSha256: sha(fs.readFileSync(openings)) });
+            { budgetMs: Number(values.budget), openingsSha256: sha(fs.readFileSync(openings)), assemblySha256: sha(fs.readFileSync(values.assembly)) });
         assert.equal(report.games.length, JSON.parse(fs.readFileSync(openings)).openings.length * 2);
         return report;
     }
     const unique = [...new Map(candidates.map(folder => [modelHash(folder), folder])).entries()];
     const development = [];
-    for (const [hash, candidate] of unique) {
+    for (const [hash, candidate] of protocol.confirmation ? [] : unique) {
         if (hash === parentHash) {
             development.push({ candidate, score: 0.5, identical: true, validationMse: JSON.parse(fs.readFileSync(join(candidate, 'metrics.json'))).validation.mse });
             continue;
@@ -62,8 +74,8 @@ async function main() {
             validationMse: JSON.parse(fs.readFileSync(join(candidate, 'metrics.json'))).validation.mse, result: result.summary });
     }
     development.sort((a, b) => b.score - a.score || a.validationMse - b.validationMse);
-    const candidate = development[0].candidate;
-    const selection = { candidate, development, identical_to_parent: modelHash(candidate) === parentHash };
+    const candidate = protocol.confirmation ? candidates[0] : development[0].candidate;
+    const selection = { candidate, development, protocol, identical_to_parent: modelHash(candidate) === parentHash };
     if (selection.identical_to_parent) {
         fs.writeFileSync(path('selection.json'), JSON.stringify(selection, null, 2) + '\n');
         return;
@@ -71,10 +83,12 @@ async function main() {
     const panel = path('promotion-openings.json');
     if (!fs.existsSync(panel))
         execFileSync(process.execPath, ['scripts/diagnose-nnue.mjs', '--mode', 'prepare', '--reference', values.reference,
-            '--model', join(candidate, 'model.nnue'), '--count', '64', '--seed', values.seed, '--shared-families',
+            '--assembly', values.assembly,
+            '--model', join(candidate, 'model.nnue'), '--count', String(protocol.pairs), '--seed', values.seed, '--shared-families',
             '--plies', '5', '--exclude-descendants',
             '--exclude', 'benchmarks/nnue-diagnostic-openings.json', '--exclude', 'benchmarks/nnue-validation-openings.json',
             '--output', panel], { stdio: ['ignore', 'inherit', 'inherit'] });
+    assert.equal(JSON.parse(fs.readFileSync(panel)).openings.length, protocol.pairs);
     console.error('Promotion matches: candidate vs parent.');
     const parentDuel = duel(candidate, values.parent, panel, path('candidate-parent.jsonl'));
     console.error('Promotion matches: candidate vs Marmelab.');
@@ -97,7 +111,7 @@ async function main() {
     const games = [...parentDuel.games, ...candidateTeacher.games, ...parentTeacher.games];
     selection.promotion_overlap = games.flatMap(game => game.turns).filter(turn => known.has(key(turn.record))).length;
     const exact = JSON.parse(fs.readFileSync('benchmarks/exact-endgames.json'));
-    const worker = analysisWorker(join(candidate, 'model.nnue'));
+    const worker = analysisWorker(join(candidate, 'model.nnue'), values.assembly);
     const errors = [];
     try {
         for (const item of exact.cases) {

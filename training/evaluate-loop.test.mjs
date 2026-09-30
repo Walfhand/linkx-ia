@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { readMatchReport } from './evaluate-loop.mjs';
+import { readMatchReport, evaluationProtocol } from './evaluate-loop.mjs';
+
+test('confirmation fixes one candidate and supports 1024 games without changing the default gate', () => {
+    assert.deepEqual(evaluationProtocol({ pairs: '512', confirmation: true }, ['candidate']), { pairs: 512, confirmation: true });
+    assert.deepEqual(evaluationProtocol({}, ['a', 'b']), { pairs: 64, confirmation: false });
+    assert.throws(() => evaluationProtocol({ pairs: '63' }, ['a']));
+    assert.throws(() => evaluationProtocol({ pairs: '64.5' }, ['a']));
+    assert.throws(() => evaluationProtocol({ confirmation: true }, ['a', 'b']));
+});
 
 test('evaluation requires a completed report with matching model identities', () => {
     const header = { type: 'context', modelSha256: 'candidate', opponentModelSha256: 'parent' };

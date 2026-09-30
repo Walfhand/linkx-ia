@@ -44,5 +44,20 @@ test('learner self-play is reproducible, collects hypothetical states and respec
             }
         }
         assert.equal(outputs[0], outputs[1]);
+        const focused = join(directory, 'focused.jsonl');
+        execFileSync(process.execPath, ['training/selfplay.mjs', '--reference', process.env.LINKX_REFERENCE,
+            '--model', 'models/nnue-v1/h512/model.nnue', '--exclusions', exclusionFile,
+            '--output', focused, '--games', '4', '--seed', '19', '--actor-nodes', '500', '--teacher-nodes', '2000',
+            '--samples', '2', '--sample-pool', '4', '--screen-nodes', '500'], { stdio: ['ignore', 'ignore', 'pipe'] });
+        const focusedRows = fs.readFileSync(focused, 'utf8').trim().split('\n').map(JSON.parse);
+        const baselineRows = outputs[0].trim().split('\n').map(JSON.parse);
+        const played = rows => rows.filter(row => row.source === 'root').sort((a, b) => a.record.localeCompare(b.record));
+        assert.deepEqual(played(focusedRows), played(baselineRows));
+        assert.ok(focusedRows.some(row => row.selection === 'disagreement'));
+        assert.ok(focusedRows.some(row => row.selection === 'uniform'));
+        for (const row of focusedRows.filter(row => row.source === 'tree')) {
+            assert.equal(row.outcome, null);
+            assert.equal(row.disagreement, Math.abs(row.learner_value - row.screen_value));
+        }
     } finally { fs.rmSync(directory, { recursive: true, force: true }); }
 });

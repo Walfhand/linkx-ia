@@ -1,9 +1,10 @@
 import unittest
 import json
 import tempfile
+import hashlib
 from pathlib import Path
 
-from loop import paired_lower_bound, promotion_decision, prepare_exclusions
+from loop import paired_lower_bound, promotion_decision, prepare_exclusions, replay_inputs, confirmed_state
 
 
 def games(scores):
@@ -12,6 +13,34 @@ def games(scores):
 
 
 class LoopTests(unittest.TestCase):
+    def test_confirmation_preserves_history_and_cannot_replace_a_different_incumbent(self):
+        state = {'incumbent': 'parent', 'iterations': [{'promoted': False}], 'replay': ['experience']}
+        failed = {'promoted': False, 'exact_cases_passed': True, 'promotion_overlap': 0}
+        retained = confirmed_state(state, failed, 'candidate', 'parent')
+        self.assertEqual(retained['incumbent'], 'parent')
+        passed = {**failed, 'promoted': True}
+        promoted = confirmed_state(state, passed, 'candidate', 'parent')
+        self.assertEqual(promoted['incumbent'], 'candidate')
+        self.assertEqual(state['incumbent'], 'parent')
+        self.assertEqual(promoted['iterations'], state['iterations'])
+        self.assertEqual(promoted['replay'], state['replay'])
+        with self.assertRaises(ValueError): confirmed_state(state, passed, 'candidate', 'another-parent')
+        with self.assertRaises(ValueError): confirmed_state(state, {**passed, 'promotion_overlap': 1}, 'candidate', 'parent')
+
+    def test_replay_carries_completed_experience_and_rejects_modified_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            data = folder / 'samples.jsonl'
+            data.write_text('retained experience\n')
+            (folder / 'iteration-1').mkdir()
+            (folder / 'iteration-1/data-report.json').write_text(json.dumps({'datasets': [
+                {'file': data.name, 'sha256': hashlib.sha256(data.read_bytes()).hexdigest()}]}))
+            state = folder / 'state.json'
+            state.write_text(json.dumps({'iterations': [{'promoted': False}], 'replay': [str(data)]}))
+            self.assertEqual(replay_inputs(state), [str(data)])
+            data.write_text('changed\n')
+            with self.assertRaises(ValueError): replay_inputs(state)
+
     def test_unsupported_parent_is_rejected_before_generating_data(self):
         with tempfile.TemporaryDirectory() as directory:
             parent = Path(directory)

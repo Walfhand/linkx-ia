@@ -23,6 +23,24 @@ Trois réentraînements sont comparés sur les ouvertures de développement. Un 
 
 L'état atomique du contrôleur est dans `state.json`. Les modèles, matchs complets et décisions de chaque passage sont dans `iteration-N`. Les corpus et essais locaux restent ignorés par Git ; les modèles et rapports publiés d'une expérience sont copiés dans `models` et `benchmarks`.
 
+### Confirmation et collecte ciblée
+
+Pour confirmer un candidat déjà choisi, `--confirmation` impose un seul modèle et supprime la sélection sur les matchs de développement. `--pairs 512` produit 1 024 parties par confrontation, avec les couleurs inversées depuis chaque départ. Les trois confrontations restent nécessaires, soit 3 072 parties au total. Le seuil de promotion reste inchangé.
+
+```bash
+node training/evaluate-loop.mjs --reference /chemin/linkx-reference --parent models/nnue-v1/h512 --candidates models/loop-v1/seed-43 --output training/runs/confirmation-v1 --budget 100 --pairs 512 --seed 84711 --confirmation
+```
+
+`--assembly` peut figer le moteur compilé pendant cette évaluation. Les rapports réutilisés doivent correspondre aux mêmes poids, au même moteur, au même panel et au même budget.
+
+Le cycle suivant peut retenir deux états parmi un réservoir de huit par recherche : un tirage uniforme et le plus grand désaccord restant entre la valeur statique du NNUE et une recherche courte du professeur. Le tri utilise un générateur indépendant de l'exploration des acteurs et ne change donc pas les coups joués. Chaque état retenu reçoit ensuite sa propre réanalyse complète à 200 000 nœuds ; l'évaluation courte ne remplace jamais ce label.
+
+```bash
+.venv/bin/python training/loop.py --reference /chemin/linkx-reference --parent models/nnue-v1/h512 --output training/runs/loop-v2 --iterations 1 --replay-state training/runs/loop-v1/state.json --generation-seed 65101 --sample-pool 8 --screen-nodes 5000
+```
+
+`--replay-state` conserve les corpus d'un cycle terminé après vérification de leurs empreintes, même si ses poids n'ont pas été promus. `--generation-seed` distingue les nouvelles parties. Changer la méthode de collecte nécessite un nouveau répertoire d'expérience. Cette sélection par désaccord est une hypothèse à mesurer : une recherche courte peut elle aussi se tromper, et ce cycle ne permet pas d'isoler son effet de celui des nouvelles données.
+
 ## NNUE v1
 
 La campagne utilise 10 000 parties, réparties en quatre lots de 2 500, aux graines 53201 à 53204. Le professeur conserve son budget de 50 000 nœuds par position et 20 % d'exploration. L'ensemble de données et les partitions sont identiques pour les trois tailles.

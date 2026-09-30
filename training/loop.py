@@ -56,6 +56,15 @@ def promotion_decision(parent_duel, candidate_teacher, parent_teacher):
             'sufficient_parent_evidence': evidence, 'no_observed_teacher_regression': no_observed_regression}
 
 
+def confirmed_state(state, decision, candidate, expected_parent):
+    if state['incumbent'] != expected_parent:
+        raise ValueError('The incumbent changed during confirmation')
+    if decision['promoted'] and (not decision.get('exact_cases_passed') or decision.get('promotion_overlap') != 0):
+        raise ValueError('Promotion requires exact-case and leakage checks')
+    return {**state, 'incumbent': candidate if decision['promoted'] else state['incumbent'],
+            'confirmations': [*state.get('confirmations', []), decision]}
+
+
 def read_matches(path):
     rows = [json.loads(line) for line in Path(path).read_text().splitlines()]
     if not rows or rows[-1].get('type') != 'summary':
@@ -69,6 +78,19 @@ def run(command, log):
     print('Running:', ' '.join(map(str, command)), flush=True)
     with Path(log).open('w') as stream:
         subprocess.run(list(map(str, command)), stdout=stream, stderr=subprocess.STDOUT, check=True)
+
+
+def replay_inputs(state_path):
+    state_path = Path(state_path)
+    previous = json.loads(state_path.read_text())
+    if not previous.get('iterations'):
+        raise ValueError('Replay requires a completed iteration')
+    report = json.loads((state_path.parent / f"iteration-{len(previous['iterations'])}" / 'data-report.json').read_text())
+    expected = {item['file']: item['sha256'] for item in report['datasets']}
+    paths = previous.get('replay', [])
+    if not paths or any(expected.get(Path(path).name) != digest(path) for path in paths):
+        raise ValueError('Previous replay data is missing or modified')
+    return paths
 
 
 def prepare_exclusions(parent, output):
@@ -109,22 +131,34 @@ def main():
     parser.add_argument('--teacher-nodes', type=int, default=200000)
     parser.add_argument('--samples', type=int, default=2)
     parser.add_argument('--match-budget', type=int, default=100)
+    parser.add_argument('--sample-pool', type=int)
+    parser.add_argument('--screen-nodes', type=int, default=5000)
+    parser.add_argument('--generation-seed', type=int, default=64101)
+    parser.add_argument('--replay-state', type=Path)
     args = parser.parse_args()
     if min(args.iterations, args.games, args.shards, args.actor_nodes, args.teacher_nodes, args.match_budget) <= 0 or args.shards > args.games:
         raise ValueError('Positive budgets and no more shards than games are required')
     if min(args.actor_nodes, args.teacher_nodes) < 500 or not 0 <= args.samples <= 32:
         raise ValueError('At least 500 search nodes and 0..32 samples are required')
+    pool = args.samples if args.sample_pool is None else args.sample_pool
+    if not args.samples <= pool <= 32 or args.screen_nodes < 500 or (pool > args.samples and args.screen_nodes > args.teacher_nodes):
+        raise ValueError('The sample pool must cover the retained samples and screening must be cheaper than labelling')
     args.parent = args.parent.resolve().relative_to(Path.cwd())
     args.output = args.output.resolve().relative_to(Path.cwd())  # GPU container mounts this workspace only.
     args.output.mkdir(parents=True, exist_ok=True)
     config = {key: str(value) if isinstance(value, Path) else value for key, value in vars(args).items() if key != 'iterations'}
     config['parent_model_sha256'] = digest(args.parent / 'model.nnue')
     config_path = args.output / 'config.json'
-    if config_path.exists() and json.loads(config_path.read_text()) != config:
-        raise ValueError('This loop directory belongs to a different configuration')
+    if config_path.exists():
+        existing = json.loads(config_path.read_text())
+        for key, default in {'sample_pool': None, 'screen_nodes': 5000, 'generation_seed': 64101, 'replay_state': None}.items():
+            existing.setdefault(key, default)
+        if existing != config:
+            raise ValueError('This loop directory belongs to a different configuration')
     write_json(config_path, config)
     state_path = args.output / 'state.json'
-    state = json.loads(state_path.read_text()) if state_path.exists() else {'incumbent': str(args.parent), 'iterations': [], 'replay': []}
+    state = json.loads(state_path.read_text()) if state_path.exists() else {
+        'incumbent': str(args.parent), 'iterations': [], 'replay': replay_inputs(args.replay_state) if args.replay_state else []}
     for iteration in range(len(state['iterations']) + 1, args.iterations + 1):
         parent = Path(state['incumbent'])
         folder = args.output / f'iteration-{iteration}'
@@ -133,7 +167,7 @@ def main():
         base_paths, frozen = prepare_exclusions(parent, exclusion_path)
         jobs, shards = [], []
         for shard in range(args.shards):
-            seed = 64101 + (iteration - 1) * 1000 + shard
+            seed = args.generation_seed + (iteration - 1) * 1000 + shard
             data = Path('training/data', f'{args.output.name}-{seed}.jsonl')
             shards.append(data)
             info_path = Path(str(data) + '.meta.json')
@@ -142,7 +176,9 @@ def main():
                 info = json.loads(info_path.read_text())
                 if (info['parentModelSha256'] != digest(parent / 'model.nnue') or info['maxNodes'] != args.teacher_nodes
                         or info['actorNodes'] != args.actor_nodes or info['completedGames'] != count
-                        or info['sampleCount'] != args.samples or info['excludedTrainingKeysSha256'] != digest(exclusion_path)):
+                        or info['sampleCount'] != args.samples or info.get('samplePool', info['sampleCount']) != pool
+                        or (pool > args.samples and info.get('screenNodes') != args.screen_nodes)
+                        or info['excludedTrainingKeysSha256'] != digest(exclusion_path)):
                     raise ValueError(f'Incompatible existing shard: {data}')
                 continue
             if data.exists():
@@ -151,6 +187,8 @@ def main():
             command = ['node', 'training/selfplay.mjs', '--reference', args.reference, '--model', parent / 'model.nnue',
                        '--exclusions', exclusion_path, '--games', count, '--seed', seed, '--actor-nodes', args.actor_nodes,
                        '--teacher-nodes', args.teacher_nodes, '--samples', args.samples, '--output', data]
+            if args.sample_pool is not None:
+                command.extend(['--sample-pool', args.sample_pool, '--screen-nodes', args.screen_nodes])
             jobs.append((subprocess.Popen(list(map(str, command)), stdout=log, stderr=subprocess.STDOUT), log))
         failed = False
         for job, log in jobs:
