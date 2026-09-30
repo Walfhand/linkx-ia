@@ -1,0 +1,45 @@
+{
+  "promoted": false,
+  "vs_parent": {
+    "games": 1024,
+    "pairs": 512,
+    "score": 0.53662109375,
+    "lower95": 0.4825330192936786,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "vs_teacher": {
+    "games": 1024,
+    "pairs": 512,
+    "score": 0.24169921875,
+    "lower95": 0.1876111442936786,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "parent_vs_teacher": {
+    "games": 1024,
+    "pairs": 512,
+    "score": 0.21044921875,
+    "lower95": 0.1563611442936786,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "sufficient_parent_evidence": false,
+  "no_observed_teacher_regression": true,
+  "exact_cases_passed": true,
+  "promotion_overlap": 0,
+  "candidate": "models/loop-v1/seed-43",
+  "parent": "models/nnue-v1/h512",
+  "report": "training/runs/confirmation-v1",
+  "protocol": {
+    "candidate": "models/loop-v1/seed-43",
+    "candidate_sha256": "3110c275ad3e51a07373978d22499325be0490731ce6087581811e95874b0de0",
+    "parent": "models/nnue-v1/h512",
+    "parent_sha256": "b2480d507370ebfd70ae26bb0225487e76842cb78cf39d91f14bca275eda3d34",
+    "opening_pairs": 512,
+    "games_per_confrontation": 1024,
+    "budget_ms": 100,
+    "seed": 84711,
+    "promotion_rule": "existing one-sided Hoeffding lower95 > 0.5 versus parent; no observed regression vs teacher; 260 exact cases; no corpus overlap",
+    "starting_commit": "d25eda0c04db554ca6277f22079f176c6ed450f5",
+    "engine_sha256": "296d58ab2a9ceb652bcaead49abd75d518edc7804eb1a1da67d5849ef3d2a99d",
+    "analysis_sha256": "7da0bddffcc50682d69e6347a35b9cc98b209ffa30a18b089002951b19a75b4e"
+  }
+}

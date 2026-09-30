@@ -47,3 +47,5 @@ Les trois exports GPU/PyTorch CPU/C# sont vérifiés sur 77 positions chacun. Le
 La boucle est relançable avec `training/loop.py --iterations 2` sur le même répertoire : elle conserve les données de la première itération, génère un nouveau lot et reprend depuis le modèle de référence. Le professeur de réanalyse reste Marmelab dans ce premier mode. Le prélèvement suivi de réanalyse n'est pas une extraction complète des bornes alpha-bêta de TreeStrap.
 
 La prochaine comparaison doit vérifier si le gain observé se reproduit et analyser les faiblesses restantes, avec une diversité d'adversaires et de positions. La publication des poids permet d'examiner ce candidat même sans promotion automatique.
+
+La [confirmation suivante sur 1 024 nouvelles parties par confrontation](../../benchmarks/confirmation-v1) mesure 53,66 % contre le parent, puis 24,17 % contre Marmelab contre 21,04 % pour le parent. Le candidat conserve un avantage observé, mais sa borne basse de 48,25 % reste insuffisante pour la promotion. Cette expérience ajoute des données au bilan sans réécrire la décision initiale.

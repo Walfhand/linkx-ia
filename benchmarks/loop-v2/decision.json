@@ -1,0 +1,150 @@
+{
+  "promoted": false,
+  "vs_parent": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.5390625,
+    "lower95": 0.38607832308244894,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "vs_teacher": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.28125,
+    "lower95": 0.12826582308244897,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "parent_vs_teacher": {
+    "games": 128,
+    "pairs": 64,
+    "score": 0.22265625,
+    "lower95": 0.06967207308244897,
+    "method": "one-sided Hoeffding bound over opening pairs; assumes independent sampled starts"
+  },
+  "sufficient_parent_evidence": false,
+  "no_observed_teacher_regression": true,
+  "exact_cases_passed": true,
+  "promotion_overlap": 0,
+  "iteration": 1,
+  "parent": "models/nnue-v1/h512",
+  "selected": "training/runs/loop-v2/iteration-1/seed-42",
+  "selection": {
+    "candidate": "training/runs/loop-v2/iteration-1/seed-42",
+    "development": [
+      {
+        "candidate": "training/runs/loop-v2/iteration-1/seed-42",
+        "score": 0.625,
+        "identical": false,
+        "validationMse": 0.3125748932361603,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 15,
+          "draws": 0,
+          "losses": 9,
+          "score": 0.625,
+          "search": {
+            "nnue": {
+              "turns": 149,
+              "meanDepth": 3.3691275167785233,
+              "nodes": 870743,
+              "nodesPerSecond": 88827.77810535533,
+              "proven": 58,
+              "maximumMs": 100.2954,
+              "p95Ms": 100.0443
+            },
+            "teacher": {
+              "turns": 148,
+              "meanDepth": 3.4054054054054053,
+              "nodes": 879713,
+              "nodesPerSecond": 87255.15246360342,
+              "proven": 54,
+              "maximumMs": 101.2093,
+              "p95Ms": 100.0447
+            }
+          }
+        }
+      },
+      {
+        "candidate": "training/runs/loop-v2/iteration-1/seed-44",
+        "score": 0.625,
+        "identical": false,
+        "validationMse": 0.3192189633846283,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 15,
+          "draws": 0,
+          "losses": 9,
+          "score": 0.625,
+          "search": {
+            "nnue": {
+              "turns": 166,
+              "meanDepth": 3.4819277108433737,
+              "nodes": 1034218,
+              "nodesPerSecond": 90164.96117028345,
+              "proven": 59,
+              "maximumMs": 100.2373,
+              "p95Ms": 100.0394
+            },
+            "teacher": {
+              "turns": 169,
+              "meanDepth": 3.4497041420118344,
+              "nodes": 1005668,
+              "nodesPerSecond": 86446.96136095861,
+              "proven": 59,
+              "maximumMs": 101.2584,
+              "p95Ms": 100.0388
+            }
+          }
+        }
+      },
+      {
+        "candidate": "training/runs/loop-v2/iteration-1/seed-43",
+        "score": 0.5625,
+        "identical": false,
+        "validationMse": 0.31005269289016724,
+        "result": {
+          "type": "summary",
+          "games": 24,
+          "wins": 13,
+          "draws": 1,
+          "losses": 10,
+          "score": 0.5625,
+          "search": {
+            "nnue": {
+              "turns": 142,
+              "meanDepth": 3.3661971830985915,
+              "nodes": 860126,
+              "nodesPerSecond": 90383.2558736202,
+              "proven": 56,
+              "maximumMs": 100.2081,
+              "p95Ms": 100.0399
+            },
+            "teacher": {
+              "turns": 139,
+              "meanDepth": 3.4748201438848922,
+              "nodes": 844118,
+              "nodesPerSecond": 88342.77614200198,
+              "proven": 48,
+              "maximumMs": 100.3082,
+              "p95Ms": 100.0453
+            }
+          }
+        }
+      }
+    ],
+    "protocol": {
+      "pairs": 64,
+      "confirmation": false
+    },
+    "identical_to_parent": false,
+    "promotion_overlap": 0,
+    "exact_cases_passed": true,
+    "exact": {
+      "cases": 260,
+      "correct": 260,
+      "errors": []
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "candidate": "models/loop-v1/seed-43",
+  "development": [],
+  "protocol": {
+    "pairs": 512,
+    "confirmation": true
+  },
+  "identical_to_parent": false,
+  "promotion_overlap": 0,
+  "exact_cases_passed": true,
+  "exact": {
+    "cases": 260,
+    "correct": 260,
+    "errors": []
+  }
+}

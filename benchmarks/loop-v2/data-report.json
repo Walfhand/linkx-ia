@@ -1,0 +1,60 @@
+{
+  "raw_positions": 198111,
+  "partitions": {
+    "train": 126868,
+    "validation": 5164,
+    "test": 4617
+  },
+  "new_games": 1000,
+  "frozen_split_seed": 42,
+  "datasets": [
+    {
+      "file": "loop-v1-64101.jsonl",
+      "sha256": "a33464c6bac05570b11421d2f7f33076c7bd5f52ad8c36b8c74a11a5470cb388"
+    },
+    {
+      "file": "loop-v1-64102.jsonl",
+      "sha256": "e148a24276b1d7a083d0e9abd4b9e24fc9261ac7f5d4f9c38d5fcf774e3458ef"
+    },
+    {
+      "file": "loop-v1-64103.jsonl",
+      "sha256": "1716c0f07f2ef371c99bf651dc847fd5c7576184aa263d5356947582b4f9fb96"
+    },
+    {
+      "file": "loop-v1-64104.jsonl",
+      "sha256": "0f08d8cf64ace8993b2cf49fbb692b0d48405c3f1cbe607e8976ad27f0d05851"
+    },
+    {
+      "file": "loop-v2-65101.jsonl",
+      "sha256": "6c8b4d2664f4e42a4c50102dbb70c0ace55eea561afa84ebbf4651ea573a74e2"
+    },
+    {
+      "file": "loop-v2-65102.jsonl",
+      "sha256": "5db5103fcfecbe49b9f2d23af93f300a24698f04ed60fdf2deb923c00dc050fc"
+    },
+    {
+      "file": "loop-v2-65103.jsonl",
+      "sha256": "7a7bf38cdd4cb326ac67b14a2cd99d97170db83988001a662fe1e5bd3134b913"
+    },
+    {
+      "file": "loop-v2-65104.jsonl",
+      "sha256": "51f918e4e3434e299cfe9d2c11b31768ca89fb1991c13733d0c1300432d9e211"
+    },
+    {
+      "file": "nnue-v1-53201.jsonl",
+      "sha256": "de602f608e101c489b73aefec7c983ccdcd6b152884c0131a3a5140b254dbf41"
+    },
+    {
+      "file": "nnue-v1-53202.jsonl",
+      "sha256": "f0850de1c6e60749777bad7287d06ffdd5a4542d9e258af89d07457918f229ee"
+    },
+    {
+      "file": "nnue-v1-53203.jsonl",
+      "sha256": "207b03e4532a83333d04876bc0e3212a914ba5c148ec16109c3f753f17ed23be"
+    },
+    {
+      "file": "nnue-v1-53204.jsonl",
+      "sha256": "bf3e4a1fcd241e77c9094771e3803480fca40bfee2c3dc92105df18bf95d1acb"
+    }
+  ]
+}

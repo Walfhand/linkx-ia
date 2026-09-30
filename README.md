@@ -43,6 +43,8 @@ Le [diagnostic du NNUE](docs/nnue-diagnostic.md) compare les budgets de 100 ms, 
 
 La [première boucle d'apprentissage exécutée](models/loop-v1) ajoute les parties du moteur courant et des positions hypothétiques réanalysées. Elle réentraîne sur GPU, compare les candidats au parent et au professeur, et conserve automatiquement la référence quand les preuves de progression sont insuffisantes.
 
+La [confirmation sur 3 072 parties](benchmarks/confirmation-v1) mesure un avantage observé insuffisant pour promouvoir le premier candidat. Le [deuxième cycle](models/loop-v2) conserve cette expérience et cible davantage les désaccords entre le NNUE et le professeur.
+
 Le professeur utilisé pour le premier entraînement est le moteur Marmelab figé au commit de référence. Notre recherche doit d'abord démontrer qu'elle le remplace avantageusement. Les mesures et leurs limites sont dans [la sélection du professeur](docs/teacher-selection.md).
 
 Le [pilote MLP](models/pilot-v1) et les [premiers NNUE incrémentaux](models/nnue-v1) sont disponibles avec leurs poids et résultats. L'[entraînement local](training/README.md) utilise la Radeon. Les NNUE sont exportés en entiers et exécutés nativement en C# sur CPU, avec mises à jour après les coups et restauration après annulation. L'API actuelle conserve sa recherche classique jusqu'à une validation suffisante du réseau en parties indépendantes.

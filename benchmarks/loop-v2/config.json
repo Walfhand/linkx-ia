@@ -1,0 +1,16 @@
+{
+  "reference": "/tmp/linkx-reference",
+  "parent": "models/nnue-v1/h512",
+  "output": "training/runs/loop-v2",
+  "games": 1000,
+  "shards": 4,
+  "actor_nodes": 5000,
+  "teacher_nodes": 200000,
+  "samples": 2,
+  "match_budget": 100,
+  "sample_pool": 8,
+  "screen_nodes": 5000,
+  "generation_seed": 65101,
+  "replay_state": "training/runs/loop-v1/state.json",
+  "parent_model_sha256": "b2480d507370ebfd70ae26bb0225487e76842cb78cf39d91f14bca275eda3d34"
+}

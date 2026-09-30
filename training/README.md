@@ -6,6 +6,8 @@ Le premier MLP est disponible dans [models/pilot-v1](../models/pilot-v1). La cam
 
 Le [premier cycle exécuté](../models/loop-v1) collecte les parties du NNUE et un réservoir borné de positions produites pendant ses recherches. Les positions prélevées sont réanalysées comme des racines par Marmelab : les bornes internes du moteur ne deviennent pas des labels exacts. Un état hypothétique n'a pas de résultat de partie observé ; son `outcome` reste `null` et sa cible vient uniquement de la réanalyse. Les résultats prouvés restent prioritaires.
 
+La [confirmation du premier candidat](../benchmarks/confirmation-v1) et le [cycle suivant avec sélection par désaccord](../models/loop-v2) disposent de rapports séparés, avec leurs poids, leurs contrôles et leurs matchs.
+
 ```bash
 dotnet build LinkxAi.slnx -c Release
 .venv/bin/python training/loop.py --reference /chemin/linkx-reference --parent models/nnue-v1/h512 --output training/runs/loop-v1 --iterations 1
